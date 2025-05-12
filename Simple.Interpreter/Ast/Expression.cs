@@ -5,7 +5,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Simple.Interpreter.Ast.Nodes;
-using Simple.Interpreter.Ast.Interfaces;
 using Simple.Interpreter.Scoping;
 
 namespace Simple.Interpreter.Ast
@@ -174,12 +173,14 @@ namespace Simple.Interpreter.Ast
             {
                 var leftDouble = Convert.ToDouble(left);
                 var rightDouble = Convert.ToDouble(right);
+                double arithmeticResult = 0.0;
+                bool bothInts = left is int && right is int;
                 switch (op)
                 {
-                    case BinaryOperators.Add: return leftDouble + rightDouble;
-                    case BinaryOperators.Minus: return leftDouble - rightDouble;
-                    case BinaryOperators.Multiply: return leftDouble * rightDouble;
-                    case BinaryOperators.Divide: return leftDouble / rightDouble;
+                    case BinaryOperators.Add: arithmeticResult = leftDouble + rightDouble; break;
+                    case BinaryOperators.Minus: arithmeticResult = leftDouble - rightDouble; break;
+                    case BinaryOperators.Multiply: arithmeticResult = leftDouble * rightDouble; break;
+                    case BinaryOperators.Divide: arithmeticResult = leftDouble / rightDouble; break;
                     case BinaryOperators.EqualTo: return leftDouble == rightDouble;
                     case BinaryOperators.NotEqualTo: return leftDouble != rightDouble;
                     case BinaryOperators.GreaterThan: return leftDouble > rightDouble;
@@ -188,6 +189,11 @@ namespace Simple.Interpreter.Ast
                     case BinaryOperators.LessThanOrEqualTo: return leftDouble <= rightDouble;
                     default: return null;
                 }
+                if (bothInts)
+                {
+                    return Convert.ToInt32(arithmeticResult);
+                }
+                return arithmeticResult;
             }
             else
             {

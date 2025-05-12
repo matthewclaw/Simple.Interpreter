@@ -13,13 +13,13 @@ namespace Simple.Interpreter.Scoping
     /// </summary>
     public class Scope
     {
-        private readonly Dictionary<string, ScopedVariable> _internalVariables;
+        private readonly Dictionary<string, Variable> _internalVariables;
         private readonly Dictionary<string, Dictionary<string, MemberInfo>> _internalMembers;
         private readonly Scope _parent;
 
         public Scope()
         {
-            _internalVariables = new Dictionary<string, ScopedVariable>();
+            _internalVariables = new Dictionary<string, Variable>();
             _internalMembers = new Dictionary<string, Dictionary<string, MemberInfo>>();
         }
 
@@ -61,7 +61,7 @@ namespace Simple.Interpreter.Scoping
             return _parent != null && _parent.ContainsMembersFor(type);
         }
 
-        public bool TryGetVariable(string name, out ScopedVariable value)
+        public bool TryGetVariable(string name, out Variable value)
         {
             if (_internalVariables.TryGetValue(name, out value))
             {
@@ -179,7 +179,7 @@ namespace Simple.Interpreter.Scoping
                 _internalVariables[name].Value = value;
                 return;
             }
-            ScopedVariable newVariable;
+            Variable newVariable;
             if (!TryGetMembers(scopedValueType, out var members))
             {
                 members = GetPublicMembersIfObject(scopedValueType);
@@ -187,11 +187,11 @@ namespace Simple.Interpreter.Scoping
             }
             if (value != null)
             {
-                newVariable = new ScopedVariable(value, members);
+                newVariable = new Variable(value, members);
             }
             else
             {
-                newVariable = new ScopedVariable(scopedValueType, members);
+                newVariable = new Variable(scopedValueType, members);
             }
             _internalVariables.Add(name, newVariable);
         }

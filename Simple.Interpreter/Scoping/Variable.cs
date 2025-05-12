@@ -11,7 +11,7 @@ namespace Simple.Interpreter.Scoping
     /// Represents a variable within a specific scope.
     /// It holds the variable's value, type information, and accessible members.
     /// </summary>
-    public class ScopedVariable
+    public class Variable
     {
         public readonly Type VariableType;
 
@@ -39,7 +39,7 @@ namespace Simple.Interpreter.Scoping
         public readonly string FullTypeName;
         public readonly Dictionary<string, MemberInfo> Members;
 
-        public ScopedVariable(object value, Dictionary<string, MemberInfo> members)
+        public Variable(object value, Dictionary<string, MemberInfo> members)
         {
             _value = value;
             VariableType = value?.GetType() ?? throw new ArgumentException("cannot be null", nameof(value));
@@ -47,14 +47,14 @@ namespace Simple.Interpreter.Scoping
             Members = members;
         }
 
-        public ScopedVariable(Type type, Dictionary<string, MemberInfo> members)
+        public Variable(Type type, Dictionary<string, MemberInfo> members)
         {
             VariableType = type;
             FullTypeName = type.FullName ?? "Object";
             Members = members;
         }
 
-        public ScopedVariable(Type type)
+        public Variable(Type type)
         {
             VariableType = type;
             FullTypeName = type.FullName ?? "Object";
