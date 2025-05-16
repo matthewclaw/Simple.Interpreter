@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Simple.Interpreter.Ast.Nodes;
+using Simple.Interpreter.Extensions;
 using Simple.Interpreter.Scoping;
 
 namespace Simple.Interpreter.Ast
@@ -50,9 +51,41 @@ namespace Simple.Interpreter.Ast
             return EvaluateExpressionNode(Tree);
         }
 
+        /// <summary>
+        /// Retrieves a list of child nodes of the expression tree of a specific type.
+        /// </summary>
+        /// <typeparam name="T">The type of ExpressionNode to filter for.</typeparam>
+        /// <param name="recursive">Whether to recursively search through all descendants or only direct children.</param>
+        /// <returns>A list of ExpressionNodes of type T found within the expression tree.</returns>
+        public List<T> GetChildren<T>(bool recursive) where T : ExpressionNode
+        {
+            List<T> results = new List<T>();
+            if (Tree is T cast)
+            {
+                results.Add(cast);
+            }
+            if (recursive)
+            {
+                results.AddRange(Tree.GetChildren<T>(recursive));
+            }
+            return results;
+        }
+
         public string GetCSharp()
         {
             return Tree.GetCSharp();
+        }
+
+        /// <summary>
+        /// Registers variable names and their respective types without assigning a value. This is useful for declaring variables before assigning values, or for expression validation
+        /// </summary>
+        /// <param name="validVariables">A dictionary of valid variables and their corresponding types to register in the scope before validation.</param>
+        public void RegisterScopedVariableTypes(Dictionary<string, Type> validVariables)
+        {
+            foreach (var variable in validVariables)
+            {
+                _scope.RegisterVariableType(variable.Key, variable.Value);
+            }
         }
 
         /// <summary>
@@ -91,18 +124,6 @@ namespace Simple.Interpreter.Ast
         {
             RegisterScopedVariableTypes(validVariables);
             return ValidateVariables(out errors);
-        }
-
-        /// <summary>
-        /// Registers variable names and their respective types without assigning a value. This is useful for declaring variables before assigning values, or for expression validation
-        /// </summary>
-        /// <param name="validVariables">A dictionary of valid variables and their corresponding types to register in the scope before validation.</param>
-        public void RegisterScopedVariableTypes(Dictionary<string, Type> validVariables)
-        {
-            foreach (var variable in validVariables)
-            {
-                _scope.RegisterVariableType(variable.Key, variable.Value);
-            }
         }
 
         /// <summary>
@@ -151,7 +172,6 @@ namespace Simple.Interpreter.Ast
         {
             if (left is bool leftBool && right is bool rightBool)
             {
-
                 switch (op)
                 {
                     case BinaryOperators.And: return leftBool && rightBool;
@@ -260,22 +280,6 @@ namespace Simple.Interpreter.Ast
             }
         }
 
-        private object EvaluateTurnaryNode(TurnaryNode node)
-        {
-            var conditionResultRaw = EvaluateExpressionNode(node.Condition);
-            bool? conditionResult = false;
-            if (conditionResultRaw != null && !(conditionResultRaw is bool))
-            {
-                throw new ArgumentException("If condition must return a boolean value");
-            }
-            conditionResult = conditionResultRaw as bool?;
-            if (conditionResult ?? false)
-            {
-                return EvaluateExpressionNode(node.Truthy);
-            }
-            return EvaluateExpressionNode(node.Falsy);
-        }
-
         /// <summary>
         /// Evaluates a function call node, which can represent either a global function call or a method call on an object.
         /// If the function is a global function registered with the interpreter, it retrieves the corresponding delegate and invokes it with the evaluated arguments.
@@ -298,20 +302,20 @@ namespace Simple.Interpreter.Ast
             {
                 throw new ArgumentException($"'{node.Parent}' is not a valid variable in scope");
             }
-            if (!contextObject.Members.TryGetValue(node.Name, out var contextMember))
+            if (!contextObject.MemberMap.TryGetMethodMember(node.Name, arguments, out var contextMember))
             {
-                throw new ArgumentException($"Function/Method '{node.Name}' not found in {node.Parent}.");
-            }
-            var methodInfoParameterCount = (contextMember as MethodInfo).GetParameters().Length;
-            if (methodInfoParameterCount != node.Arguments.Count)
-            {
-                throw new ArgumentException($"Function/Method '{node.Name}' expects {methodInfoParameterCount} parameter(s) but {node.Arguments.Count} {(node.Arguments.Count == 1 ? "was" : "were")} supplied");
+                throw new ArgumentException($"Function/Method '{node.Name}' accepting [{String.Join(", ", arguments.Select(a => a.GetType()))}] was not found in {node.Parent}.");
             }
             if ((contextObject.Value?.Equals(null) ?? true) || contextObject.Value.Equals(default))
             {
                 return null;
             }
-            return ((MethodInfo)contextMember).Invoke(contextObject.Value, arguments);
+            var callSuccessful = contextMember!.TryInvoke(contextObject.Value, out var callResult, arguments);
+            if (!callSuccessful)
+            {
+                return null;
+            }
+            return callResult;
         }
 
         /// <summary>
@@ -328,7 +332,7 @@ namespace Simple.Interpreter.Ast
             {
                 throw new ArgumentException($"Object '{node.Parent}' not found in scope.");
             }
-            if (!contextObject.Members.TryGetValue(node.Name, out var contextMember))
+            if (!contextObject.MemberMap.TryGetMember(node.Name, out var contextMember))
             {
                 throw new ArgumentException($"Member '{node.Name}' not found in {node.Parent}.");
             }
@@ -336,9 +340,9 @@ namespace Simple.Interpreter.Ast
             {
                 return null;
             }
-            if (contextMember.MemberType == MemberTypes.Property)
+            if (contextMember!.MemberType == MemberTypes.Property)
             {
-                return ((PropertyInfo)contextMember).GetValue(contextObject.Value);
+                return ((PropertyInfo)contextMember)!.GetValue(contextObject.Value);
             }
             else if (contextMember.MemberType == MemberTypes.Field)
             {
@@ -347,6 +351,30 @@ namespace Simple.Interpreter.Ast
             throw new ArgumentException($"Unsupported MemberType: {contextMember.MemberType}");
         }
 
+        private object EvaluateTurnaryNode(TurnaryNode node)
+        {
+            var conditionResultRaw = EvaluateExpressionNode(node.Condition);
+            bool? conditionResult = false;
+            if (conditionResultRaw != null && !(conditionResultRaw is bool))
+            {
+                throw new ArgumentException("If condition must return a boolean value");
+            }
+            conditionResult = conditionResultRaw as bool?;
+            if (conditionResult ?? false)
+            {
+                return EvaluateExpressionNode(node.Truthy);
+            }
+            return EvaluateExpressionNode(node.Falsy);
+        }
+
+        /// <summary>
+        /// Evaluates a binary operation where the right operand is a list.
+        /// Currently, only supports the 'in' and 'not in' operators for checking if the left operand is present in the list.
+        /// </summary>
+        /// <param name="left">The left operand.</param>
+        /// <param name="op">The operator ('in' or 'not in').</param>
+        /// <param name="rightList">The list node (right operand).</param>
+        /// <returns>True if the left operand is in the list (for 'in'), or false if it is not in the list (for 'not in').</returns>
         private bool EvaluationBinaryListOperation(object left, string op, ListNodeBase rightList)
         {
             if (left.GetType() != rightList.ItemType)
@@ -354,20 +382,6 @@ namespace Simple.Interpreter.Ast
                 throw new InvalidOperationException($"Left node value type '{left.GetType().FullName}' does not match the Right node value type '{rightList.ItemType}'");
             }
             return op == BinaryOperators.In ? rightList.Values.Contains(left) : !rightList.Values.Contains(left);
-        }
-
-        public List<T> GetChildren<T>(bool recursive) where T : ExpressionNode
-        {
-            List<T> results = new List<T>();
-            if (Tree is T cast)
-            {
-                results.Add(cast);
-            }
-            if (recursive)
-            {
-                results.AddRange(Tree.GetChildren<T>(recursive));
-            }
-            return results;
         }
 
         #endregion Private Methods

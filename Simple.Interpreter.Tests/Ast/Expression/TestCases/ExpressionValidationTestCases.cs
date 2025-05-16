@@ -1,4 +1,4 @@
-﻿using Microsoft.VisualStudio.TestPlatform.ObjectModel;
+﻿using Simple.Interpreter.Tests.Ast.Expression.Models;
 using Simple.Interpreter.Tests.Ast.Expression.TestCases.Models;
 using System;
 using System.Collections;
@@ -18,13 +18,13 @@ namespace Simple.Interpreter.Tests.Ast.Expression.TestCases
             yield return new ExpressionValidationTest("2+1 if(context==true) else 4", new Dictionary<string, Type>() { { "context", typeof(bool) } });
             yield return new ExpressionValidationTest("foo+' test'", new Dictionary<string, Type> { { "foo", typeof(string) } });
             yield return new ExpressionValidationTest("bar+' test'", new Dictionary<string, Type> { { "foo", typeof(string) } }, new List<string> { "" });
-            yield return new ExpressionValidationTest("context.MyProperty+1", new Dictionary<string, Type> { { "context", typeof(TestObject) } });
-            yield return new ExpressionValidationTest("context.MyProperty4", new Dictionary<string, Type> { { "context", typeof(TestObject) } }, new List<string> { ""});
-            yield return new ExpressionValidationTest("context.MyMethod()", new Dictionary<string, Type> { { "context", typeof(TestObject) } });
-            yield return new ExpressionValidationTest("context.MyMethod(()", new Dictionary<string, Type> { { "context", typeof(TestObject) } }, new List<string> { ""});
-            yield return new ExpressionValidationTest("context.MyMethod2('test')", new Dictionary<string, Type> { { "context", typeof(TestObject) } });
-            yield return new ExpressionValidationTest("context.MyMethod2('test','bar')", new Dictionary<string, Type> { { "context", typeof(TestObject) } }, new List<string> { ""});
-            yield return new ExpressionValidationTest("context.MyMethod3('test','bar')", new Dictionary<string, Type> { { "context", typeof(TestObject) } });
+            yield return new ExpressionValidationTest("context.MyProperty+1", new Dictionary<string, Type> { { "context", typeof(ExpressionTestObject) } });
+            yield return new ExpressionValidationTest("context.MyProperty4", new Dictionary<string, Type> { { "context", typeof(ExpressionTestObject) } }, new List<string> { ""});
+            yield return new ExpressionValidationTest("context.MyMethod()", new Dictionary<string, Type> { { "context", typeof(ExpressionTestObject) } });
+            yield return new ExpressionValidationTest("context.MyMethod(()", new Dictionary<string, Type> { { "context", typeof(ExpressionTestObject) } }, new List<string> { ""});
+            yield return new ExpressionValidationTest("context.MyMethod2('test')", new Dictionary<string, Type> { { "context", typeof(ExpressionTestObject) } });
+            yield return new ExpressionValidationTest("context.MyMethod2('test','bar')", new Dictionary<string, Type> { { "context", typeof(ExpressionTestObject) } }, new List<string> { ""});
+            yield return new ExpressionValidationTest("context.MyMethod3('test','bar')", new Dictionary<string, Type> { { "context", typeof(ExpressionTestObject) } });
             yield return new ExpressionValidationTest("1+(2*3)");
             yield return new ExpressionValidationTest("1+((2*3)/2)");
             yield return new ExpressionValidationTest("1)+((2*3)/2)", new List<string> { ""});

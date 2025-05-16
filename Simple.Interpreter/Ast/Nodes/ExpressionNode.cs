@@ -9,7 +9,11 @@ namespace Simple.Interpreter.Ast.Nodes
     public abstract class ExpressionNode
     {
         #region Public Methods
-
+        /// <summary>
+        /// Retrieves a list of child nodes.
+        /// </summary>
+        /// <param name="recursive">A boolean value indicating whether to recursively search for child nodes.</param>
+        /// <returns>A list of child nodes.</returns>
         public virtual List<ExpressionNode> GetChildren(bool recursive)
         {
             return new List<ExpressionNode>();
