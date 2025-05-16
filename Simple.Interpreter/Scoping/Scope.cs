@@ -13,14 +13,25 @@ namespace Simple.Interpreter.Scoping
     /// </summary>
     public class Scope
     {
+        /// <summary>
+        /// Map of variables that have been registered in this scope
+        /// </summary>
         private readonly Dictionary<string, Variable> _internalVariables;
-        private readonly Dictionary<string, Dictionary<string, MemberInfo>> _internalMembers;
+        /// <summary>
+        /// Map of instance members for registered variable Types
+        /// </summary>
+        private readonly Dictionary<string, Dictionary<string, MemberInfo>> _internalMembersMap;
+        /// <summary>
+        /// Map of instance members for registered variable Types
+        /// </summary>
+        private readonly Dictionary<string, Dictionary<string, List<MethodInfo>>> _internalOverloadedMethodsMap;
         private readonly Scope _parent;
 
         public Scope()
         {
             _internalVariables = new Dictionary<string, Variable>();
-            _internalMembers = new Dictionary<string, Dictionary<string, MemberInfo>>();
+            _internalMembersMap = new Dictionary<string, Dictionary<string, MemberInfo>>();
+            _internalOverloadedMethodsMap = new Dictionary<string, Dictionary<string, List<MethodInfo>>>();
         }
 
         public Scope(Scope parent) : this()
@@ -54,7 +65,7 @@ namespace Simple.Interpreter.Scoping
         /// <returns>True if the scope or a parent scope contains members for the type; otherwise, false.</returns>
         public bool ContainsMembersFor(string type)
         {
-            if (_internalMembers.ContainsKey(type))
+            if (_internalMembersMap.ContainsKey(type))
             {
                 return true;
             }
@@ -78,7 +89,7 @@ namespace Simple.Interpreter.Scoping
         /// <returns>True if members for the specified type are found in the scope or a parent scope; otherwise, false.</returns>
         public bool TryGetMembers(string type, out Dictionary<string, MemberInfo> members)
         {
-            if (_internalMembers.TryGetValue(type, out members))
+            if (_internalMembersMap.TryGetValue(type, out members))
             {
                 return true;
             }
@@ -93,7 +104,7 @@ namespace Simple.Interpreter.Scoping
         /// <returns>True if members for the specified type are found in the scope or a parent scope; otherwise, false.</returns>
         public bool TryGetMembers(Type type, out Dictionary<string, MemberInfo> members)
         {
-            if (_internalMembers.TryGetValue(type.FullName, out members))
+            if (_internalMembersMap.TryGetValue(type.FullName, out members))
             {
                 return true;
             }
@@ -149,7 +160,7 @@ namespace Simple.Interpreter.Scoping
                 _parent.RegisterTypeMembers(typeFullName, members);
                 return;
             }
-            _internalMembers.Add(typeFullName, members);
+            _internalMembersMap.Add(typeFullName, members);
         }
 
         /// <summary>
@@ -208,12 +219,20 @@ namespace Simple.Interpreter.Scoping
             {
                 return new Dictionary<string, MemberInfo>();
             }
-
+            var result = new Dictionary<string, MemberInfo>();
             var allInstanceMembers = type?.GetMembers(BindingFlags.Public | BindingFlags.Instance) ?? new MemberInfo[0];
-            var members = allInstanceMembers
-                .Where(member => member.MemberType != MemberTypes.Constructor)
-                .ToDictionary(x => x.Name, x => x);
-            return members;
+            foreach (var member in allInstanceMembers)
+            {
+                if (!result.ContainsKey(member.Name))
+                {
+                    result.Add(member.Name, member);
+                }
+                else
+                {
+                    var props = (member as MethodInfo).GetParameters();
+                }
+            }
+            return result;
         }
     }
 }

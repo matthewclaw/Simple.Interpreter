@@ -18,37 +18,37 @@ namespace Simple.Interpreter.Tests.Ast.Expression
             _expressionInterpreter = new ExpressionInterpreter();
         }
         [Theory]
-        [ClassData(typeof(SimpleTestCases))]
-        public void Expression_EvaluateWithScopeExpression_ReturnsCorrectly(string expression, object expectedValue)
+        [ClassData(typeof(ExpressionScopedTestCases))]
+        public void Expression_EvaluateWithScopeExpression_ReturnsCorrectly(string expression, Dictionary<string, object>? variables, bool errorExpected, object? expectedValue)
         {
-            //// Arrange
-            //var exceptionThrown = false;
-            //object actualValue = null;
+            // Arrange
+            var exceptionThrown = false;
+            object actualValue = null;
 
-            //// Act
-            //try
-            //{
-            //    var expressionObj = _expressionInterpreter.GetExpression(expression);
-            //    if (data.Variables != null)
-            //    {
-            //        expression.SetScope(data.Variables);
-            //    }
-            //    actualValue = expression.Evaluate();
-            //}
-            //catch
-            //{
-            //    exceptionThrown = true;
-            //}
+            // Act
+            try
+            {
+                var expressionObj = _expressionInterpreter.GetExpression(expression);
+                if (variables != null)
+                {
+                    expressionObj.SetScope(variables);
+                }
+                actualValue = expressionObj.Evaluate();
+            }
+            catch
+            {
+                exceptionThrown = true;
+            }
 
-            //// Assert
-            //Assert.Equal(data.ErrorExpected, exceptionThrown);
-            //if (!data.ErrorExpected)
-            //{
-            //    Assert.Equal(data.ExpectedValue, actualValue);
-            //}
+            // Assert
+            Assert.Equal(errorExpected, exceptionThrown);
+            if (!errorExpected)
+            {
+                Assert.Equal(expectedValue, actualValue);
+            }
         }
         [Theory]
-        [ClassData(typeof(SimpleTestCases))]
+        [ClassData(typeof(ExpressionSimpleTestCases))]
         public void Expression_EvaluateWithSimpleExpression_ReturnsCorrectly(string expression, object expectedValue)
         {
             // Arrange
@@ -61,6 +61,35 @@ namespace Simple.Interpreter.Tests.Ast.Expression
 
             //Assert
             Assert.Equal(expectedValue, actualValue);
+        }
+
+        [Theory]
+        [ClassData(typeof(ExpressionTranslationTestCases))]
+        public void Expression_GetCSharp_TranslatesCorrectly(string expression, string expectedValue)
+        {
+            // Arrange
+            var expressionObj = _expressionInterpreter.GetExpression(expression);
+
+            // Act
+            var actualCSharp = expressionObj.GetCSharp();
+
+            // Assert
+            Assert.Equal(expectedValue, actualCSharp);
+        }
+        [Theory]
+        [ClassData(typeof(ExpressionValidationTestCases))]
+        public void Expression_Validate_ValidatesCorrectly(string expression, Dictionary<string, Type> variableTypes, List<string> expectedErrorParts)
+        {
+            // Arrange
+            var expectedErrorCount = expectedErrorParts.Count;
+            var expectedResult = expectedErrorCount == 0;
+
+            // Act
+            var actualResult = _expressionInterpreter.Validate(expression, variableTypes, out var actualErrors);
+
+            // Assert
+            Assert.Equal(expectedResult, actualResult);
+            Assert.Equal(expectedErrorCount, actualErrors.Count);
         }
     }
 }
