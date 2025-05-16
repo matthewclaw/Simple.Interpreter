@@ -13,25 +13,31 @@ namespace Simple.Interpreter.Scoping
     /// </summary>
     public class Scope
     {
+        #region Private Fields
+
+        /// <summary>
+        /// Map of instance members for registered variable Types
+        /// </summary>
+        private readonly Dictionary<string, ObjectMemberMap> _internalMembersMap;
+
         /// <summary>
         /// Map of variables that have been registered in this scope
         /// </summary>
         private readonly Dictionary<string, Variable> _internalVariables;
+
         /// <summary>
-        /// Map of instance members for registered variable Types
+        /// The parent scope of this scope.  Used for variable lookup in enclosing scopes.  Null if this is the global scope.
         /// </summary>
-        private readonly Dictionary<string, Dictionary<string, MemberInfo>> _internalMembersMap;
-        /// <summary>
-        /// Map of instance members for registered variable Types
-        /// </summary>
-        private readonly Dictionary<string, Dictionary<string, List<MethodInfo>>> _internalOverloadedMethodsMap;
-        private readonly Scope _parent;
+        private readonly Scope? _parent;
+
+        #endregion Private Fields
+
+        #region Public Constructors
 
         public Scope()
         {
             _internalVariables = new Dictionary<string, Variable>();
-            _internalMembersMap = new Dictionary<string, Dictionary<string, MemberInfo>>();
-            _internalOverloadedMethodsMap = new Dictionary<string, Dictionary<string, List<MethodInfo>>>();
+            _internalMembersMap = new Dictionary<string, ObjectMemberMap>();
         }
 
         public Scope(Scope parent) : this()
@@ -42,6 +48,24 @@ namespace Simple.Interpreter.Scoping
         public Scope(Dictionary<string, object> variables) : this()
         {
             SetVariables(variables);
+        }
+
+        #endregion Public Constructors
+
+        #region Public Methods
+
+        /// <summary>
+        /// Checks if the scope or any of its parent scopes contain reflected members for the specified type.
+        /// </summary>
+        /// <param name="type">The full name of the type to check for.</param>
+        /// <returns>True if the scope or a parent scope contains members for the type; otherwise, false.</returns>
+        public bool ContainsMembersFor(string type)
+        {
+            if (_internalMembersMap.ContainsKey(type))
+            {
+                return true;
+            }
+            return _parent != null && _parent.ContainsMembersFor(type);
         }
 
         /// <summary>
@@ -59,74 +83,13 @@ namespace Simple.Interpreter.Scoping
         }
 
         /// <summary>
-        /// Checks if the scope or any of its parent scopes contain reflected members for the specified type.
-        /// </summary>
-        /// <param name="type">The full name of the type to check for.</param>
-        /// <returns>True if the scope or a parent scope contains members for the type; otherwise, false.</returns>
-        public bool ContainsMembersFor(string type)
-        {
-            if (_internalMembersMap.ContainsKey(type))
-            {
-                return true;
-            }
-            return _parent != null && _parent.ContainsMembersFor(type);
-        }
-
-        public bool TryGetVariable(string name, out Variable value)
-        {
-            if (_internalVariables.TryGetValue(name, out value))
-            {
-                return true;
-            }
-            return _parent != null && _parent.TryGetVariable(name, out value);
-        }
-
-        /// <summary>
-        /// Tries to retrieve reflected members for the specified type from the scope or its parent scopes.
-        /// </summary>
-        /// <param name="type">The full name of the type whose members are to be retrieved.</param>
-        /// <param name="members">When this method returns, contains the dictionary of member information associated with the specified type, if found; otherwise, null. This parameter is passed uninitialized.</param>
-        /// <returns>True if members for the specified type are found in the scope or a parent scope; otherwise, false.</returns>
-        public bool TryGetMembers(string type, out Dictionary<string, MemberInfo> members)
-        {
-            if (_internalMembersMap.TryGetValue(type, out members))
-            {
-                return true;
-            }
-            return _parent != null && _parent.TryGetMembers(type, out members);
-        }
-
-        /// <summary>
-        /// Tries to retrieve reflected members for the specified type from the scope or its parent scopes.
-        /// </summary>
-        /// <param name="type">The type whose members are to be retrieved.</param>
-        /// <param name="members">When this method returns, contains the dictionary of member information associated with the specified type, if found; otherwise, null. This parameter is passed uninitialized.</param>
-        /// <returns>True if members for the specified type are found in the scope or a parent scope; otherwise, false.</returns>
-        public bool TryGetMembers(Type type, out Dictionary<string, MemberInfo> members)
-        {
-            if (_internalMembersMap.TryGetValue(type.FullName, out members))
-            {
-                return true;
-            }
-            return _parent != null && _parent.TryGetMembers(type.FullName, out members);
-        }
-
-        public void SetVariables(Dictionary<string, object> scope)
-        {
-            foreach (var item in scope)
-            {
-                SetVariable(item.Key, item.Value);
-            }
-        }
-
-        /// <summary>
         /// Registers the public members of a type within the scope, allowing for member access during interpretation.
         /// If the type's members are already registered in this scope or a parent scope, this method does nothing.
         /// </summary>
         /// <param name="type">The type whose members are to be registered.</param>
         public void RegisterTypeMembers(Type type)
         {
-            var fullName = type.FullName;
+            var fullName = type.FullName!;
             var memberMap = GetPublicMembersIfObject(type);
             RegisterTypeMembers(fullName, memberMap);
         }
@@ -144,6 +107,22 @@ namespace Simple.Interpreter.Scoping
         }
 
         /// <summary>
+        /// Registers an ObjectMemberMap for a given type full name within the scope.
+        /// If the type's members are already registered in this scope or a parent scope, this method registers in the parent.
+        /// </summary>
+        /// <param name="typeFullName">The full name of the type whose members are to be registered.</param>
+        /// <param name="memberMap">A ObjectMemberMap representing the members of the type to register.</param>
+        public void RegisterTypeMembers(string typeFullName, ObjectMemberMap memberMap)
+        {
+            if (_parent != null)
+            {
+                _parent.RegisterTypeMembers(typeFullName, memberMap);
+                return;
+            }
+            _internalMembersMap.Add(typeFullName, memberMap);
+        }
+
+        /// <summary>
         /// Registers a dictionary of member information for a given type full name within the scope.
         /// If the type's members are already registered in this scope or a parent scope, this method does nothing.
         /// </summary>
@@ -155,12 +134,8 @@ namespace Simple.Interpreter.Scoping
             {
                 return;
             }
-            if (_parent != null)
-            {
-                _parent.RegisterTypeMembers(typeFullName, members);
-                return;
-            }
-            _internalMembersMap.Add(typeFullName, members);
+            ObjectMemberMap newMap = new ObjectMemberMap(typeFullName, members.Values.ToList());
+            RegisterTypeMembers(typeFullName, newMap);
         }
 
         /// <summary>
@@ -183,29 +158,66 @@ namespace Simple.Interpreter.Scoping
             SetVariable(name, scopedValueType, value);
         }
 
-        private void SetVariable(string name, Type scopedValueType, object value)
+        /// <summary>
+        /// Sets multiple variables in the scope from a dictionary of name-value pairs.
+        /// </summary>
+        /// <param name="scope">A dictionary where the key is the variable name and the value is the variable's value.</param>
+        public void SetVariables(Dictionary<string, object> scope)
         {
-            if (_internalVariables.ContainsKey(name))
+            foreach (var item in scope)
             {
-                _internalVariables[name].Value = value;
-                return;
+                SetVariable(item.Key, item.Value);
             }
-            Variable newVariable;
-            if (!TryGetMembers(scopedValueType, out var members))
-            {
-                members = GetPublicMembersIfObject(scopedValueType);
-                RegisterTypeMembers(scopedValueType.FullName, members);
-            }
-            if (value != null)
-            {
-                newVariable = new Variable(value, members);
-            }
-            else
-            {
-                newVariable = new Variable(scopedValueType, members);
-            }
-            _internalVariables.Add(name, newVariable);
         }
+
+        /// <summary>
+        /// Tries to retrieve reflected members for the specified type from the scope or its parent scopes.
+        /// </summary>
+        /// <param name="type">The type whose members are to be retrieved.</param>
+        /// <param name="members">When this method returns, contains the dictionary of member information associated with the specified type, if found; otherwise, null. This parameter is passed uninitialized.</param>
+        /// <returns>True if members for the specified type are found in the scope or a parent scope; otherwise, false.</returns>
+        public bool TryGetMemberMap(Type type, out ObjectMemberMap members)
+        {
+            if (_internalMembersMap.TryGetValue(type.FullName!, out members))
+            {
+                return true;
+            }
+            return _parent != null && _parent.TryGetMembers(type.FullName!, out members);
+        }
+
+        /// <summary>
+        /// Tries to retrieve reflected members for the specified type from the scope or its parent scopes.
+        /// </summary>
+        /// <param name="type">The full name of the type whose members are to be retrieved.</param>
+        /// <param name="members">When this method returns, contains the dictionary of member information associated with the specified type, if found; otherwise, null. This parameter is passed uninitialized.</param>
+        /// <returns>True if members for the specified type are found in the scope or a parent scope; otherwise, false.</returns>
+        public bool TryGetMembers(string type, out ObjectMemberMap members)
+        {
+            if (_internalMembersMap.TryGetValue(type, out members))
+            {
+                return true;
+            }
+            return _parent != null && _parent.TryGetMembers(type, out members);
+        }
+
+        /// <summary>
+        /// Tries to retrieve a variable from the scope or its parent scopes.
+        /// </summary>
+        /// <param name="name">The name of the variable to retrieve.</param>
+        /// <param name="value">When this method returns, contains the variable associated with the specified name, if found; otherwise, null. This parameter is passed uninitialized.</param>
+        /// <returns>True if the variable is found in the scope or a parent scope; otherwise, false.</returns>
+        public bool TryGetVariable(string name, out Variable value)
+        {
+            if (_internalVariables.TryGetValue(name, out value))
+            {
+                return true;
+            }
+            return _parent != null && _parent.TryGetVariable(name, out value);
+        }
+
+        #endregion Public Methods
+
+        #region Private Methods
 
         /// <summary>
         /// Retrieves a dictionary of public instance members (excluding constructors) for a given type.
@@ -234,5 +246,39 @@ namespace Simple.Interpreter.Scoping
             }
             return result;
         }
+
+        /// <summary>
+        /// Sets the value of a variable in the scope. If the variable already exists, its value is updated.
+        /// If the variable does not exist, a new variable is created and added to the scope.
+        /// If the type's members are not already registered, it also registers the type members.
+        /// </summary>
+        /// <param name="name">The name of the variable to set.</param>
+        /// <param name="scopedValueType">The type of the variable's value.</param>
+        /// <param name="value">The value to assign to the variable.</param>
+        private void SetVariable(string name, Type scopedValueType, object value)
+        {
+            if (_internalVariables.ContainsKey(name))
+            {
+                _internalVariables[name].Value = value;
+                return;
+            }
+            Variable newVariable;
+            if (!TryGetMemberMap(scopedValueType, out var memberMap))
+            {
+                memberMap = new ObjectMemberMap(scopedValueType);
+                RegisterTypeMembers(scopedValueType.FullName, memberMap);
+            }
+            if (value != null)
+            {
+                newVariable = new Variable(value, memberMap);
+            }
+            else
+            {
+                newVariable = new Variable(scopedValueType, memberMap);
+            }
+            _internalVariables.Add(name, newVariable);
+        }
+
+        #endregion Private Methods
     }
 }

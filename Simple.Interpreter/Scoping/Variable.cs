@@ -37,28 +37,28 @@ namespace Simple.Interpreter.Scoping
 
         private object _value;
         public readonly string FullTypeName;
-        public readonly Dictionary<string, MemberInfo> Members;
+        public readonly ObjectMemberMap MemberMap;
 
-        public Variable(object value, Dictionary<string, MemberInfo> members)
+        public Variable(object value, ObjectMemberMap memberMap)
         {
             _value = value;
             VariableType = value?.GetType() ?? throw new ArgumentException("cannot be null", nameof(value));
             FullTypeName = VariableType?.FullName ?? "Object";
-            Members = members;
+            MemberMap = memberMap;
         }
 
-        public Variable(Type type, Dictionary<string, MemberInfo> members)
+        public Variable(Type type, ObjectMemberMap memberMap)
         {
             VariableType = type;
             FullTypeName = type.FullName ?? "Object";
-            Members = members;
+            MemberMap = memberMap;
         }
 
         public Variable(Type type)
         {
             VariableType = type;
             FullTypeName = type.FullName ?? "Object";
-            Members = type.GetMembers(BindingFlags.Instance | BindingFlags.Public).ToDictionary(x => x.Name);
+            MemberMap = new ObjectMemberMap(type);
         }
 
         public override string ToString()
