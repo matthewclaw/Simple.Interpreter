@@ -8,6 +8,13 @@ namespace Simple.Interpreter
 {
     public static class BasicExpressionFunctions
     {
+        /// <summary>
+        /// Determines the smallest value between two values (accepts numbers and strings) 
+        /// </summary>
+        /// <param name="args">Accepts 2 arguments in the array</param>
+        /// <returns>If numbers (double or int) are supplied, then the smallest value is return. Else if strings are supplied then the shortest one is returned.</returns>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public static object Min(object[] args)
         {
             if (args.Length != 2)
@@ -31,6 +38,13 @@ namespace Simple.Interpreter
             }
             throw new InvalidOperationException();
         }
+        /// <summary>
+        /// Determines the largest value between two values (accepts numbers and strings) 
+        /// </summary>
+        /// <param name="args">Accepts 2 arguments in the array</param>
+        /// <returns>If numbers (double or int) are supplied, then the largest value is return. Else if strings are supplied then the longest one is returned.</returns>
+        /// <exception cref="ArgumentException"></exception>
+        /// <exception cref="InvalidOperationException"></exception>
         public static object Max(object[] args)
         {
             if (args.Length != 2)
@@ -53,6 +67,38 @@ namespace Simple.Interpreter
                 return aStr.Length > bStr.Length ? aStr : bStr;
             }
             throw new InvalidOperationException();
+        }
+
+        /// <summary>
+        /// Tests whether the supplied string starts with the supplied value
+        /// </summary>
+        /// <param name="args">Accepts 2 arguments in the array, first being the string to test and second being the value to look for</param>
+        /// <returns>True, if the first string starts with the second</returns>
+        public static object StartsWith(object[] args)
+        {
+            if (args.Length != 2)
+            {
+                throw new ArgumentException("StartsWith expects 2 arguments");
+            }
+            var stringToTest = args[0]!.ToString();
+            var value = args[1]!.ToString();
+           return stringToTest!.StartsWith(value!);
+        }
+
+        /// <summary>
+        /// Tests whether the supplied string ends with the supplied value
+        /// </summary>
+        /// <param name="args">Accepts 2 arguments in the array, first being the string to test and second being the value to look for</param>
+        /// <returns>True, if the first string ends with the second</returns>
+        public static object EndsWith(object[] args)
+        {
+            if (args.Length != 2)
+            {
+                throw new ArgumentException("StartsWith expects 2 arguments");
+            }
+            var stringToTest = args[0]!.ToString();
+            var value = args[1]!.ToString();
+           return stringToTest!.EndsWith(value!);
         }
     }
 }

@@ -13,7 +13,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple.Interpreter.Tests", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2. Demo", "2. Demo", "{8D30DB46-874F-4437-93D8-215F108651F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simple.Interpreter.Demo", "Simple.Interpreter.Demo\Simple.Interpreter.Demo.csproj", "{92DABBB7-085C-4FF6-B0F3-E5FCBBD3C906}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simple.Interpreter.Demo", "Simple.Interpreter.Demo\Simple.Interpreter.Demo.csproj", "{92DABBB7-085C-4FF6-B0F3-E5FCBBD3C906}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{0CDEE284-4917-42BC-A0F7-7E02FEC73ABE}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -90,6 +90,13 @@ namespace Simple.Interpreter.Tests.Ast.Expression
             // Assert
             Assert.Equal(expectedResult, actualResult);
             Assert.Equal(expectedErrorCount, actualErrors.Count);
+            if (actualErrors.Count > 0)
+            {
+                for (var i = 0; i < expectedErrorCount; i++)
+                {
+                    Assert.Contains(expectedErrorParts[i], actualErrors[i].Message);
+                }
+            }
         }
     }
 }
