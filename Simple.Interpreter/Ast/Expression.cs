@@ -294,6 +294,10 @@ namespace Simple.Interpreter.Ast
             {
                 if (!_interpreter.RegisteredFunctions.TryGetValue(node.Name, out var funcDelegate))
                 {
+                    if (node.Name == "if")
+                    {
+                        throw new ArgumentException("Invalid format for tunary statement. Expecting: `<Truthy Expression> if(<Condition>) else <Falsy Expression>`");
+                    }
                     throw new ArgumentException($"'{node.Name}' is not a registered function");
                 }
                 return funcDelegate(arguments);

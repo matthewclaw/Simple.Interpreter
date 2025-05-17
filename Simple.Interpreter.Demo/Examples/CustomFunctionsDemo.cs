@@ -50,6 +50,8 @@ namespace Simple.Interpreter.Demo.Examples
             {
                 Console.WriteLine($"{frank} is not older than {ageToTest}");
             }
+
+            Console.ReadLine();
         }
 
 
