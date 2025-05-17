@@ -64,17 +64,36 @@ namespace Simple.Interpreter.Ast
 
         public bool Validate(string expression, out List<Exception> errors)
         {
+            return Validate(expression, out _, out errors);
+        }
+        public bool Validate(string expression, out Expression? validExpression, out List<Exception> errors)
+        {
             errors = new List<Exception>();
             if (!ValidateExpressionString(expression, out var parsed, out var error))
             {
                 errors.Add(error);
+                validExpression = null;
                 return false;
             }
             if (!parsed.ValidateVariables(out var memberErrors))
             {
                 errors.AddRange(memberErrors);
+                validExpression = null;
                 return false;
             }
+            var turnaryNodes = parsed.GetChildren<TurnaryNode>(true);
+            if (turnaryNodes == null || turnaryNodes.Count == 0)
+            {
+                validExpression = parsed;
+                return true;
+            }
+            if(!ValidateTurnaryNodes(turnaryNodes, out var turnaryErrors))
+            {
+                errors.AddRange(turnaryErrors);
+                validExpression = null;
+                return false;
+            }
+            validExpression = parsed;
             return true;
         }
 
@@ -112,6 +131,23 @@ namespace Simple.Interpreter.Ast
                 {
                     var expression = new Expression(node, this);
                     expression.RegisterScopedVariableTypes(validVariables);
+                    _ = expression.Evaluate();
+                }
+                catch (Exception e)
+                {
+                    errors.Add(e);
+                }
+            }
+            return errors.Count == 0;
+        }
+        private bool ValidateTurnaryNodes(List<TurnaryNode> nodes, out List<Exception> errors)
+        {
+            errors = new List<Exception>();
+            foreach (var node in nodes)
+            {
+                try
+                {
+                    var expression = new Expression(node, this);
                     _ = expression.Evaluate();
                 }
                 catch (Exception e)
@@ -218,6 +254,10 @@ namespace Simple.Interpreter.Ast
         private TurnaryNode ParseTunaryNode(ExpressionNode truthyNode, List<string> tokens, ref int position)
         {
             var elseIndex = tokens.IndexOf("else");
+            if(elseIndex == -1)
+            {
+                throw new ArgumentException("No 'else' found in expression");
+            }
             var conditionExpressionLength = elseIndex - position - 1;
             var conditionExpressionRange = tokens.GetRange(position + 1, conditionExpressionLength);
             var conditionPosition = 0;

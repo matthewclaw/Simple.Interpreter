@@ -69,6 +69,16 @@ namespace Simple.Interpreter.Ast.Interfaces
 
         /// <summary>
         /// Validates an expression.  This method checks if the expression string can be parsed and if all members
+        /// are valid (i.e., they exist within the global scope).
+        /// </summary>
+        /// <param name="expression">The expression string to validate.</param>
+        /// <param name="validExpression">If the expression is valid, an instance of <seealso cref="Expression"/> else null</param>
+        /// <param name="errors">A list of exceptions encountered during validation.  Will be empty if validation succeeds.</param>
+        /// <returns>True if the expression is valid; otherwise, false.</returns>
+        bool Validate(string expression, out Expression? validExpression, out List<Exception> errors);
+
+        /// <summary>
+        /// Validates an expression.  This method checks if the expression string can be parsed and if all members
         /// are valid (i.e., they exist within <paramref name="validVariables"/>).
         /// </summary>
         /// <param name="expression">The expression string to validate.</param>

@@ -170,6 +170,22 @@ namespace Simple.Interpreter.Scoping
             }
         }
 
+        public override string ToString()
+        {
+            StringBuilder stringBuilder = new StringBuilder();
+            if (_parent is not null)
+            {
+                stringBuilder.AppendLine("Parent variable:");
+                stringBuilder.AppendLine(_parent.ToString());
+            }
+            stringBuilder.AppendLine("Variables:");
+            foreach (var variable in _internalVariables)
+            {
+                stringBuilder.AppendLine($"- {variable.Key} => {variable.Value}");
+            }
+            return stringBuilder.ToString();
+        }
+
         /// <summary>
         /// Tries to retrieve reflected members for the specified type from the scope or its parent scopes.
         /// </summary>

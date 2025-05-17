@@ -74,6 +74,7 @@ namespace Simple.Interpreter.Demo.Examples
                 Console.WriteLine($"{bob.Name} does not meet the criteria.");
             }
             #endregion
+            Console.ReadLine();
         }
     }
 }
