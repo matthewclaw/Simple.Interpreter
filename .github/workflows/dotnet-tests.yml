@@ -1,0 +1,27 @@
+name: Run .NET Unit Tests
+
+on:
+  pull_request:
+    branches: [master] # Adjust this to your main branch name if it's different
+
+jobs:
+  test:
+    runs-on: ubuntu-latest # Or windows-latest if you prefer a Windows environment
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x' # Or your target .NET SDK version
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release
+
+      - name: Test
+        run: dotnet test --no-restore --verbosity normal
