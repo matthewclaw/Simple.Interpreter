@@ -15,7 +15,8 @@
 * **Simple Expression Syntax:** The interpreted language offers a minimal and intuitive syntax, easy for non-technical users to grasp.
 * **Arithmetic Operations:** Includes standard arithmetic operations (+, -, \*, /).
 * **Comparison Operators:** Supports a full suite of comparison operators (==, !=, >, <, >=, <=).
-* **Logical Operators:** Implements logical AND (`and`), OR (`or`), and NOT (`not`) operations for building complex conditions.
+* **Logical Operators:** Implements logical AND (`and`) and OR (`or`) operations for building complex conditions.
+* **Array Operators:** `in` (array contains), `not in` (array does not contain) to check against arrays.
 * **Variable Resolution:** Allows expressions to reference external variables provided at runtime, including **complex objects and their properties**.
 * **Extensible Function Support:** Designed to allow developers to easily register custom functions that can be called within the expressions.
 * **Lightweight and Embeddable:** The library has minimal dependencies and can be easily integrated into any .NET application.
