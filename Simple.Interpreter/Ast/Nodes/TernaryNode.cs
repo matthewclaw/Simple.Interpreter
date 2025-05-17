@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Simple.Interpreter.Ast.Nodes
 {
-    public class TurnaryNode : ExpressionNode
+    public class TernaryNode : ExpressionNode
     {
         #region Public Properties
 
@@ -18,7 +18,7 @@ namespace Simple.Interpreter.Ast.Nodes
 
         #region Public Constructors
 
-        public TurnaryNode(ExpressionNode condition, ExpressionNode truthy, ExpressionNode falsy)
+        public TernaryNode(ExpressionNode condition, ExpressionNode truthy, ExpressionNode falsy)
         {
             Condition = condition;
             Truthy = truthy;

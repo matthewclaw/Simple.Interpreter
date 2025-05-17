@@ -81,15 +81,15 @@ namespace Simple.Interpreter.Ast
                 validExpression = null;
                 return false;
             }
-            var turnaryNodes = parsed.GetChildren<TurnaryNode>(true);
-            if (turnaryNodes == null || turnaryNodes.Count == 0)
+            var ternaryNodes = parsed.GetChildren<TernaryNode>(true);
+            if (ternaryNodes == null || ternaryNodes.Count == 0)
             {
                 validExpression = parsed;
                 return true;
             }
-            if(!ValidateTurnaryNodes(turnaryNodes, out var turnaryErrors))
+            if(!ValidateTernaryNodes(ternaryNodes, out var ternaryErrors))
             {
-                errors.AddRange(turnaryErrors);
+                errors.AddRange(ternaryErrors);
                 validExpression = null;
                 return false;
             }
@@ -110,19 +110,19 @@ namespace Simple.Interpreter.Ast
                 errors.AddRange(memberErrors);
                 return false;
             }
-            var turnaryNodes = parsed.GetChildren<TurnaryNode>(true);
-            if (turnaryNodes == null || turnaryNodes.Count == 0)
+            var ternaryNodes = parsed.GetChildren<TernaryNode>(true);
+            if (ternaryNodes == null || ternaryNodes.Count == 0)
             {
                 return true;
             }
-            if (!ValidateTurnaryNodes(turnaryNodes, validVariables, out var turnaryErrors))
+            if (!ValidateTernaryNodes(ternaryNodes, validVariables, out var ternaryErrors))
             {
-                errors.AddRange(turnaryErrors);
+                errors.AddRange(ternaryErrors);
                 return false;
             }
             return errors.Count == 0;
         }
-        private bool ValidateTurnaryNodes(List<TurnaryNode> nodes, Dictionary<string, Type> validVariables, out List<Exception> errors)
+        private bool ValidateTernaryNodes(List<TernaryNode> nodes, Dictionary<string, Type> validVariables, out List<Exception> errors)
         {
             errors = new List<Exception>();
             foreach (var node in nodes)
@@ -140,7 +140,7 @@ namespace Simple.Interpreter.Ast
             }
             return errors.Count == 0;
         }
-        private bool ValidateTurnaryNodes(List<TurnaryNode> nodes, out List<Exception> errors)
+        private bool ValidateTernaryNodes(List<TernaryNode> nodes, out List<Exception> errors)
         {
             errors = new List<Exception>();
             foreach (var node in nodes)
@@ -251,7 +251,7 @@ namespace Simple.Interpreter.Ast
             return left;
         }
 
-        private TurnaryNode ParseTunaryNode(ExpressionNode truthyNode, List<string> tokens, ref int position)
+        private TernaryNode ParseTunaryNode(ExpressionNode truthyNode, List<string> tokens, ref int position)
         {
             var elseIndex = tokens.IndexOf("else");
             if(elseIndex == -1)
@@ -264,7 +264,7 @@ namespace Simple.Interpreter.Ast
             var conditionNode = ParseExpression(conditionExpressionRange, ref conditionPosition);
             position = elseIndex + 1;
             var falsyNode = ParseExpression(tokens, ref position);
-            return new TurnaryNode(conditionNode, truthyNode, falsyNode);
+            return new TernaryNode(conditionNode, truthyNode, falsyNode);
 
         }
 

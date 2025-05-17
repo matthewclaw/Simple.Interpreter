@@ -268,9 +268,9 @@ namespace Simple.Interpreter.Ast
                 {
                     return EvaluateMemberCallNode(memberCallNode);
                 }
-                else if (node is TurnaryNode turnaryNode)
+                else if (node is TernaryNode ternaryNode)
                 {
-                    return EvaluateTurnaryNode(turnaryNode);
+                    return EvaluateTernaryNode(ternaryNode);
                 }
                 return null;
             }
@@ -355,7 +355,7 @@ namespace Simple.Interpreter.Ast
             throw new ArgumentException($"Unsupported MemberType: {contextMember.MemberType}");
         }
 
-        private object EvaluateTurnaryNode(TurnaryNode node)
+        private object EvaluateTernaryNode(TernaryNode node)
         {
             var conditionResultRaw = EvaluateExpressionNode(node.Condition);
             bool? conditionResult = false;
