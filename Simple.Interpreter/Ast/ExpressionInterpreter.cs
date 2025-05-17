@@ -26,8 +26,10 @@ namespace Simple.Interpreter.Ast
             GlobalScope = new Scope();
             RegisteredFunctions = new Dictionary<string, Func<object[], object>>()
             {
-                {"min",BasicExpressionFunctions.Min },
-                {"max",BasicExpressionFunctions.Max },
+                {"startsWith", BasicExpressionFunctions.StartsWith },
+                {"endsWith", BasicExpressionFunctions.EndsWith },
+                {"min", BasicExpressionFunctions.Min },
+                {"max", BasicExpressionFunctions.Max },
             };
         }
 
