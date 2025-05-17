@@ -20,7 +20,7 @@ namespace Simple.Interpreter.Tests.Ast.Expression.TestCases
             yield return new ExpressionValidationTest("bar+' test'", new Dictionary<string, Type> { { "foo", typeof(string) } }, new List<string> { "'bar' is not a valid variable in scope" });
             yield return new ExpressionValidationTest("context.MyProperty+1", new Dictionary<string, Type> { { "context", typeof(ExpressionTestObject) } });
             yield return new ExpressionValidationTest("context.MyProperty.Sub+1", new Dictionary<string, Type> { { "context", typeof(ExpressionTestObject) } }, new List<string> { "Can only access members one level deep" });
-            yield return new ExpressionValidationTest("context.MyProperty4", new Dictionary<string, Type> { { "context", typeof(ExpressionTestObject) } }, new List<string> { "Member 'MyProperty4' not found in context." });
+            yield return new ExpressionValidationTest("context.MyProperty4+contextOther.MyProp", new Dictionary<string, Type> { { "context", typeof(ExpressionTestObject) } }, new List<string> { "Member 'MyProperty4' not found in context.", "Object 'contextOther' not found in scope." });
             yield return new ExpressionValidationTest("context.MyMethod()", new Dictionary<string, Type> { { "context", typeof(ExpressionTestObject) } });
             yield return new ExpressionValidationTest("context.MyMethod(()", new Dictionary<string, Type> { { "context", typeof(ExpressionTestObject) } }, new List<string> { "near token 3 (\")\")" });
             yield return new ExpressionValidationTest("context.MyMethod2('test')", new Dictionary<string, Type> { { "context", typeof(ExpressionTestObject) } });
