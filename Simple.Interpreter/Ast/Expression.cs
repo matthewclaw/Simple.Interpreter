@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Simple.Interpreter.Ast.Nodes;
+﻿using Simple.Interpreter.Ast.Nodes;
 using Simple.Interpreter.Extensions;
 using Simple.Interpreter.Scoping;
+using System.Reflection;
 
 namespace Simple.Interpreter.Ast
 {
@@ -268,9 +263,9 @@ namespace Simple.Interpreter.Ast
                 {
                     return EvaluateMemberCallNode(memberCallNode);
                 }
-                else if (node is TurnaryNode turnaryNode)
+                else if (node is TernaryNode ternaryNode)
                 {
-                    return EvaluateTurnaryNode(turnaryNode);
+                    return EvaluateTernaryNode(ternaryNode);
                 }
                 return null;
             }
@@ -355,7 +350,7 @@ namespace Simple.Interpreter.Ast
             throw new ArgumentException($"Unsupported MemberType: {contextMember.MemberType}");
         }
 
-        private object EvaluateTurnaryNode(TurnaryNode node)
+        private object EvaluateTernaryNode(TernaryNode node)
         {
             var conditionResultRaw = EvaluateExpressionNode(node.Condition);
             bool? conditionResult = false;
