@@ -10,7 +10,14 @@ namespace Simple.Interpreter.Demo
     {
         static void Main(string[] args)
         {
+            Console.WriteLine(ConditionExpressionDemo.DESCRIPTION);
+            Console.WriteLine("==============");
             ConditionExpressionDemo.Run();
+            Console.WriteLine("==============");
+            Console.WriteLine(CustomFunctionsDemo.DESCRIPTION);
+            Console.WriteLine("==============");
+            CustomFunctionsDemo.Run();
+            Console.WriteLine("==============");
         }
     }
 }

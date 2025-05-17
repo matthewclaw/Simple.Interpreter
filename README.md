@@ -83,48 +83,75 @@ else
 *For more see the `Simple.Interpreter.Demo` project*
 ### Defining Custom Functions (Including with Complex Objects)
 
-Custom functions can also operate on complex objects passed in the context.
+Custom functions can be defined and used by `Expressions` created with the `ExpressionInterpreter`.
+
+*PS: Unfortunately, due to limitations, custom functions must accept either an `object` or an `object[]` and return an `object`.*
 
 ```csharp
 using Simple.Interpreter;
 using System;
 using System.Collections.Generic;
 
-public class UserFunctions
+private static object IsUserOlderThan(object[] args)
 {
-    public static bool IsOlderThan(User user, int age)
+    if (args.Length != 2)
     {
-        return user?.Age > age;
+        throw new ArgumentException($"{nameof(IsUserOlderThan)} expects 2 arguments");
     }
+    User? user = args[0] as User;
+    int? age = args[1] as int?;
+    bool result = user?.Age > age;
+    return result;
 }
 
-// ... in your code ...
+ExpressionInterpreter interpreter = new ExpressionInterpreter();
+//Register custom Function
+// PS: Due to limitations, custom functions must accept either an `object` or an `object[]` and return an `object`. Sorry :/
+interpreter.RegisterFunction("isUserOlderThan", IsUserOlderThan);
 
-var interpreter = new Interpreter();
-interpreter.RegisterFunction("isOlderThan", (Func<User, int, bool>)UserFunctions.IsOlderThan);
-
-string expressionWithComplexObjectFunction = "isOlderThan(currentUser, 30)";
-var functionContext = new Dictionary<string, object>
+var frank = new User
 {
-    {"currentUser", new User { Name = "Bob", Age = 35 }}
+    Name = "Frank",
+    Age = 40,
+    City = "Cape Town"
+};
+var ageToTest = 30;
+
+var scope = new Dictionary<string, object>()
+{
+    {"user", frank },
+    {"age", ageToTest }
 };
 
-object functionResult = interpreter.Evaluate(expressionWithComplexObjectFunction, functionContext);
-Console.WriteLine($"Is Bob older than 30? {functionResult}");
-```
+Expression expression = interpreter.GetExpression(EXPRESSION);
+// Set its scope
+expression.SetScope(scope);
 
+var result = expression.Evaluate();
+if(result is bool isOldEnough && isOldEnough)
+{
+    Console.WriteLine($"{frank} is Older than {ageToTest}");
+}
+else
+{
+    Console.WriteLine($"{frank} is not older than {ageToTest}");
+}
+```
+*For more see the `Simple.Interpreter.Demo` project*
 ## Language Syntax (Brief Overview for Expressions)
 
-* **Variables:** Identifiers (e.g., `age`, `productName`, `user`). These will be resolved from the provided context. You can access properties of complex object variables using dot notation (e.g., `user.Age`, `order.Customer.Name`).
+* **Variables:** Identifiers (e.g., `age`, `productName`, `user`). These will be resolved from the provided context. You can access properties of complex object variables using dot notation (e.g., `user.Age`, `order.Name`). The expression can only access variables 1 level deep (e.g. `user.FullAddress.PostalCode` is 2 level deep and will fail validation)
 * **Literals:**
     * **Numbers:** Integers and decimals (e.g., `10`, `3.14`).
     * **Strings:** Enclosed in single quotes (e.g., `'Hello'`).
     * **Booleans:** `true` or `false`.
+    * **Arrays:** The `ExpressionInterpreter` can parse array literals of `string`, `double` and `int` (e.g. `[1, 2, 3, 4, 5]` or `['a', 'b', 'c']`).
 * **Arithmetic Operators:** `+` (addition), `-` (subtraction), `*` (multiplication), `/` (division).
 * **Comparison Operators:** `==` (equals), `!=` (not equals), `>` (greater than), `<` (less than), `>=` (greater than or equal to), `<=` (less than or equal to).
-* **Logical Operators:** `and` (logical AND), `or` (logical OR), `not` (logical NOT).
+* **Logical Operators:** `and` (logical AND), `or` (logical OR).
+* **Array Operators:** `in` (array contains), `not in` (array does not contain).
 * **Parentheses:** Used to group expressions and control operator precedence (e.g., `(a + b) * c`).
-* **Function Calls:** Registered functions can be called using their name followed by arguments in parentheses (e.g., `startsWith(name, 'Prefix')`, `isOlderThan(currentUser, 30)`).
+* **Function Calls:** Registered custom functions can be called using their name followed by arguments in parentheses (e.g., `startsWith(name, 'Prefix')`, `isOlderThan(currentUser, 30)`). By default, the `ExpressionInterpreter` includes a set of built-in functions including `startsWith`, `endsWith`, `min` and `max`.
 
 ## Contributing
 

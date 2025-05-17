@@ -1,4 +1,5 @@
 ﻿using Simple.Interpreter.Ast;
+using Simple.Interpreter.Demo.Examples.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,18 +8,17 @@ using System.Threading.Tasks;
 
 namespace Simple.Interpreter.Demo.Examples
 {
+    /// <summary>
+    /// Class to demonstrate basic usage of the <seealso cref="ExpressionInterpreter"/> and variables 
+    /// </summary>
     public static class ConditionExpressionDemo
     {
         public const string EXPRESSION = "user.Age > 18 and user.City == 'Johannesburg'";
-        public class User
-        {
-            public string Name { get; set; }
-            public int Age { get; set; }
-            public string City { get; set; }
-        }
+        public const string DESCRIPTION = $"Condition Expression: {EXPRESSION}";
 
         public static void Run()
         {
+            
             // Creating users
             var alice = new User
             {
@@ -41,11 +41,12 @@ namespace Simple.Interpreter.Demo.Examples
 
             // Get the Expression Object
             var expression = interpreter.GetExpression(EXPRESSION);
+            Console.WriteLine($"Parsed Expression Succesfully: {expression}");
 
             #region Alice
             // Setting the variable to "Alice"
             expression.SetScopedVariable("user", alice);
-
+            Console.WriteLine($"Checking {alice} against expression");
             object aliceResult = expression.Evaluate();
 
             if (aliceResult is bool aliceMeetsCriteria && aliceMeetsCriteria)
@@ -61,7 +62,7 @@ namespace Simple.Interpreter.Demo.Examples
             #region Alice
             // Setting the variable to "Bob"
             expression.SetScopedVariable("user", bob);
-
+            Console.WriteLine($"Checking {bob} against expression");
             object bobResult = expression.Evaluate();
 
             if (bobResult is bool bobMeetsCriteria && bobMeetsCriteria)
