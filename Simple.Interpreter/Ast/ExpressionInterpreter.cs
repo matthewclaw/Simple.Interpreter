@@ -15,7 +15,7 @@ namespace Simple.Interpreter.Ast
     public class ExpressionInterpreter : IExpressionInterpreter
     {
 
-        public const string TokenPattern = @"((not\s)?in\s)|==|!=|>=|<=|>|<|and|or|(""[^""]*""|'[^']*'|\d+\.?\d*|\w+(\.\w+)?|\[|\]|[\,\+\-\*\/\(\)])";
+        public const string TokenPattern = @"((not\s)?in\s)|==|!=|>=|<=|>|<|and|or|(""[^""]*""|'[^']*'|\d+\.?\d*|\w+(\.\w+)*|\[|\]|[\,\+\-\*\/\(\)])";
 
         public Scope GlobalScope { get; private set; }
 
@@ -47,7 +47,11 @@ namespace Simple.Interpreter.Ast
             }
             catch (Exception ex)
             {
-                throw new ArgumentException($"Exception while parsing expression \"{expression}\" at token {tokenPosition} (\"{tokens[tokenPosition]}\")", ex);
+                if (tokenPosition == tokens.Count)
+                {
+                    tokenPosition--;
+                }
+                throw new ArgumentException($"Exception while parsing expression \"{expression}\" near token {tokenPosition} (\"{tokens[tokenPosition]}\") Error: {ex.Message}", ex);
             }
         }
 
@@ -190,7 +194,7 @@ namespace Simple.Interpreter.Ast
                 ExpressionNode right = ParseExpression(tokens, ref position, tokenContext, opPrecedence);
                 if (right == null)
                 {
-                    return null;
+                    break;
                 }
                 left = new BinaryOperationNode { Operator = op, Left = left, Right = right };
                 if (position < tokens.Count && tokens[position].ToLower() == "if")
@@ -358,6 +362,12 @@ namespace Simple.Interpreter.Ast
             }
             else if (position < tokens.Count && tokens[position] == "(") // Function Call Check
             {
+                var parts = currentToken.Split('.');
+                if (parts.Length > 2)
+                {
+                    position--;
+                    throw new ArgumentException("Can only access members one level deep");
+                }
                 return ParseFunctionCall(currentToken, tokens, ref position);
             }
             else if (currentToken[0] == '-' || int.TryParse($"{currentToken[0]}", out _))
@@ -386,6 +396,7 @@ namespace Simple.Interpreter.Ast
                 var parts = currentToken.Split('.');
                 if (parts.Length > 2)
                 {
+                    position--;
                     throw new ArgumentException("Can only access members one level deep");
                 }
                 return new MemberCallNode { Parent = parts[0], Name = parts[1] };
