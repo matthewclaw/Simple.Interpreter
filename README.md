@@ -13,6 +13,7 @@
 ## Features
 
 * **Simple Expression Syntax:** The interpreted language offers a minimal and intuitive syntax, easy for non-technical users to grasp.
+* **Validation:** The interpreter validates the expression syntax and ensures that it is well-formed and can be evaluated.
 * **Arithmetic Operations:** Includes standard arithmetic operations (+, -, \*, /).
 * **Comparison Operators:** Supports a full suite of comparison operators (==, !=, >, <, >=, <=).
 * **Logical Operators:** Implements logical AND (`and`) and OR (`or`) operations for building complex conditions.
@@ -82,7 +83,39 @@ else
 }
 ```
 *For more see the `Simple.Interpreter.Demo` project*
-### Defining Custom Functions (Including with Complex Objects)
+
+### Validation
+```csharp
+ // Create an instance of the interpreter
+ var interpreter = new ExpressionInterpreter();
+
+ // Define the expression
+ string expressionString = "user.Age > 18 and user.City == 'Johannesburg'";
+
+ // Define valid variable types allowed in expressions
+ var validVariableTypes = new Dictionary<string, Type>
+ {
+    { "user", typeof(User) },
+ };
+
+ // validate the expression
+ var isValid = interpreter.Validate(expressionString, validVariableTypes, out var errors);
+
+ if (isValid)
+ {
+     Console.WriteLine($"The expression is valid!");
+ }
+ else
+ {
+     Console.WriteLine($"There were issues with the expression: ");
+     foreach (var err in errors)
+     {
+         Console.WriteLine(err.Message);
+     }
+ }
+```
+*For more see the `Simple.Interpreter.Demo` project*
+### Defining Custom Functions
 
 Custom functions can be defined and used by `Expressions` created with the `ExpressionInterpreter`.
 
@@ -123,7 +156,7 @@ var scope = new Dictionary<string, object>()
     {"user", frank },
     {"age", ageToTest }
 };
-
+string expressionString = "isUserOlderThan(user, age)";
 Expression expression = interpreter.GetExpression(EXPRESSION);
 // Set its scope
 expression.SetScope(scope);
@@ -153,6 +186,7 @@ else
 * **Array Operators:** `in` (array contains), `not in` (array does not contain).
 * **Parentheses:** Used to group expressions and control operator precedence (e.g., `(a + b) * c`).
 * **Function Calls:** Registered custom functions can be called using their name followed by arguments in parentheses (e.g., `startsWith(name, 'Prefix')`, `isOlderThan(currentUser, 30)`). By default, the `ExpressionInterpreter` includes a set of built-in functions including `startsWith`, `endsWith`, `min` and `max`.
+* **Ternary Expressions:** Python-style ternary support (e.g., `'Over 21' if (user.Age > 21) else 'Under 21'`).
 
 ## Contributing
 
@@ -175,4 +209,4 @@ This project is licensed under the [MIT License](https://opensource.org/licenses
 
 ## Contact
 
-[Your Name/Username] - [Your Email Address (Optional)] - [Your Website/Social Media (Optional)]
+[Matthew Law](https://www.linkedin.com/in/matthew-l-87448694/)

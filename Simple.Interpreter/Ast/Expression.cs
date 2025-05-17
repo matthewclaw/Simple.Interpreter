@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Simple.Interpreter.Ast.Nodes;
+﻿using Simple.Interpreter.Ast.Nodes;
 using Simple.Interpreter.Extensions;
 using Simple.Interpreter.Scoping;
+using System.Reflection;
 
 namespace Simple.Interpreter.Ast
 {

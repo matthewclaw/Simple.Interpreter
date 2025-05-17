@@ -1,14 +1,12 @@
-﻿using Simple.Interpreter.Ast;
-using Simple.Interpreter.Demo.Examples;
-using System;
-using System.Linq.Expressions;
+﻿using Simple.Interpreter.Demo.Examples;
 
 namespace Simple.Interpreter.Demo
 {
-
     internal class Program
     {
-        static void Main(string[] args)
+        #region Private Methods
+
+        private static void Main(string[] args)
         {
             string choice = string.Empty;
             while (choice != "x")
@@ -25,9 +23,11 @@ namespace Simple.Interpreter.Demo
                     case "c":
                         ConditionExpressionDemo.Run();
                         break;
+
                     case "f":
                         CustomFunctionsDemo.Run();
                         break;
+
                     case "v":
                         ValidationDemo.Run();
                         break;
@@ -38,5 +38,7 @@ namespace Simple.Interpreter.Demo
                 }
             }
         }
+
+        #endregion Private Methods
     }
 }
