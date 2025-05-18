@@ -21,7 +21,7 @@
 * **Variable Resolution:** Allows expressions to reference external variables provided at runtime, including **complex objects and their properties**.
 * **Extensible Function Support:** Designed to allow developers to easily register custom functions that can be called within the expressions.
 * **Lightweight and Embeddable:** The library has minimal dependencies and can be easily integrated into any .NET application.
-* **Complex Object Support:** As showcased in the unit tests, the interpreter can access properties of complex objects passed within the evaluation context.
+* **Complex Object Support:** As showcased in the unit tests, the interpreter can access properties, fields and methods of complex objects passed within the evaluation context.
 
 ## Getting Started
 
@@ -111,7 +111,7 @@ public class User
 var interpreter = new ExpressionInterpreter();
 
 // Define the expression accessing properties of a complex object
-string expressionString = "alice.SayHi('Frank') if(alice.Age > 18) else bob.SayHi('Frank')";
+string expressionString = "alice.SayHi('Frank') if(alice.Age > 18+51) else bob.SayHi('Frank')";
 
 var alice = new User
 {
@@ -138,7 +138,7 @@ var expression = interpreter.GetExpression(expressionString);
 expression.SetScope(context);
 // Evaluate the expression
 object result = expression.Evaluate();
-Console.WriteLine($"{result}");
+Console.WriteLine($"{result}"); //Outputs: Hi there Frank!, I'm Bob
 ```
 *For more see the `Simple.Interpreter.Demo` project*
 
@@ -157,7 +157,7 @@ Console.WriteLine($"{result}");
  };
 
  // validate the expression
- var isValid = interpreter.Validate(expressionString, validVariableTypes, out var errors);
+ var isValid = interpreter.Validate(expressionString, validVariableTypes, out var errors); //Returns true
 
  if (isValid)
  {
@@ -219,7 +219,7 @@ Expression expression = interpreter.GetExpression(EXPRESSION);
 // Set its scope
 expression.SetScope(scope);
 
-var result = expression.Evaluate();
+var result = expression.Evaluate(); //Returns true
 if(result is bool isOldEnough && isOldEnough)
 {
     Console.WriteLine($"{frank} is Older than {ageToTest}");
@@ -232,7 +232,7 @@ else
 *For more see the `Simple.Interpreter.Demo` project*
 ## Language Syntax (Brief Overview for Expressions)
 
-* **Variables:** Identifiers (e.g., `age`, `productName`, `user`). These will be resolved from the provided context. You can access properties of complex object variables using dot notation (e.g., `user.Age`, `order.Name`). The expression can only access variables 1 level deep (e.g. `user.FullAddress.PostalCode` is 2 level deep and will fail validation)
+* **Variables:** Identifiers (e.g., `age`, `productName`, `user`). These will be resolved from the provided context. You can access properties, fields and methods of complex object variables using dot notation (e.g., `user.Age`, `order.Name`, `user.DoSomething()`). The expression can only access variables 1 level deep (e.g. `user.FullAddress.PostalCode` is 2 level deep and will fail validation)
 * **Literals:**
     * **Numbers:** Integers and decimals (e.g., `10`, `3.14`).
     * **Strings:** Enclosed in single quotes (e.g., `'Hello'`).
