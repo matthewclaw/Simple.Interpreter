@@ -215,7 +215,7 @@ var scope = new Dictionary<string, object>()
     {"age", ageToTest }
 };
 string expressionString = "isUserOlderThan(user, age)";
-Expression expression = interpreter.GetExpression(EXPRESSION);
+Expression expression = interpreter.GetExpression(expressionString);
 // Set its scope
 expression.SetScope(scope);
 
