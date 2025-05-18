@@ -11,6 +11,10 @@ namespace Simple.Interpreter.Demo.Examples.Models
         public required string Name { get; set; }
         public required int Age { get; set; }
         public required string City { get; set; }
+        public string SayHi(string to)
+        {
+            return $"Hi there {to}!, I'm {Name}";
+        }
         public override string ToString()
         {
             return $"{Name} (Age: {Age}, City: {City})";

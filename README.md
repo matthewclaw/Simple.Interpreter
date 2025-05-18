@@ -34,6 +34,7 @@ dotnet add package Simple.Interpreter
 ```
 
 ### Basic Usage with Complex Objects
+#### Example 1: Accessing Properties of Complex Objects
 
 ```csharp
 using Simple.Interpreter;
@@ -45,6 +46,11 @@ public class User
     public string Name { get; set; }
     public int Age { get; set; }
     public string City { get; set; }
+    public string SayHi(string to)
+   {
+       return $"Hi there {to}!, I'm {Name}";
+   }
+
 }
 
 // Create an instance of the interpreter
@@ -65,6 +71,66 @@ var user = new User
 var context = new Dictionary<string, object>
 {
     {"user", user}
+};
+// Parse the expression
+var expression = interpreter.GetExpression(expressionString);
+// Set its scope
+expression.SetScope(context);
+// Evaluate the expression
+object result = expression.Evaluate();
+
+if (result is bool isAdultInJohannesburg && isAdultInJohannesburg)
+{
+    Console.WriteLine($"{user.Name} meets the criteria.");
+}
+else
+{
+    Console.WriteLine($"{user.Name} does not meet the criteria.");
+}
+```
+#### Example 2: Using Conditional Logic and method call
+
+```csharp
+using Simple.Interpreter;
+using System;
+using System.Collections.Generic;
+
+public class User
+{
+    public string Name { get; set; }
+    public int Age { get; set; }
+    public string City { get; set; }
+    public string SayHi(string to)
+   {
+       return $"Hi there {to}!, I'm {Name}";
+   }
+
+}
+
+// Create an instance of the interpreter
+var interpreter = new ExpressionInterpreter();
+
+// Define the expression accessing properties of a complex object
+string expressionString = "alice.SayHi('Frank') if(alice.Age > 18) else bob.SayHi('Frank')";
+
+var alice = new User
+{
+    Name = "Alice",
+    Age = 25,
+    City = "Pretoria"
+};
+var bob = new User
+{
+    Name = "Bob",
+    Age = 19,
+    City = "Cape Town"
+};
+
+// Provide the context (including the complex object) for the expression
+var context = new Dictionary<string, object>
+{
+    {"alice", alice},
+    {"bob", bob}
 };
 // Parse the expression
 var expression = interpreter.GetExpression(expressionString);
