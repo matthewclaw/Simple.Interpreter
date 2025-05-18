@@ -138,15 +138,7 @@ var expression = interpreter.GetExpression(expressionString);
 expression.SetScope(context);
 // Evaluate the expression
 object result = expression.Evaluate();
-
-if (result is bool isAdultInJohannesburg && isAdultInJohannesburg)
-{
-    Console.WriteLine($"{user.Name} meets the criteria.");
-}
-else
-{
-    Console.WriteLine($"{user.Name} does not meet the criteria.");
-}
+Console.WriteLine($"{result}");
 ```
 *For more see the `Simple.Interpreter.Demo` project*
 
