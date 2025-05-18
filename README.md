@@ -273,4 +273,4 @@ This project is licensed under the [MIT License](https://opensource.org/licenses
 
 If you find this project useful, please consider making a donation to support its development. Your support will help me continue to maintain and improve this project.
 
-[![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate/?hosted_button_id=ZSKSBJLT4TDG4)
+[![PayPal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/donate/?hosted_button_id=ZSKSBJLT4TDG4)
