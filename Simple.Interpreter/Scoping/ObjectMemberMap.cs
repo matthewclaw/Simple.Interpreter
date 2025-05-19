@@ -12,6 +12,7 @@ namespace Simple.Interpreter.Scoping
 
         public readonly Dictionary<string, FieldInfo> Fields;
         public readonly Dictionary<string, List<MethodInfo>> Methods;
+        private readonly Dictionary<string, MethodInfo> _cachedConcreteGenerics;
         public readonly string ObjectTypeName;
         public readonly Dictionary<string, PropertyInfo> Properties;
 
@@ -25,6 +26,7 @@ namespace Simple.Interpreter.Scoping
             Properties = properties;
             Fields = fields;
             Methods = methods;
+            _cachedConcreteGenerics = new Dictionary<string, MethodInfo>();
         }
 
         public ObjectMemberMap(string objectTypeName, List<MemberInfo> members)
@@ -33,6 +35,7 @@ namespace Simple.Interpreter.Scoping
             Properties = new Dictionary<string, PropertyInfo>();
             Fields = new Dictionary<string, FieldInfo>();
             Methods = new Dictionary<string, List<MethodInfo>>();
+            _cachedConcreteGenerics = new Dictionary<string, MethodInfo>();
             MapMembers(members);
         }
 
@@ -42,6 +45,7 @@ namespace Simple.Interpreter.Scoping
             Properties = new Dictionary<string, PropertyInfo>();
             Fields = new Dictionary<string, FieldInfo>();
             Methods = new Dictionary<string, List<MethodInfo>>();
+            _cachedConcreteGenerics = new Dictionary<string, MethodInfo>();
             MapMembers(type);
         }
 
@@ -294,6 +298,35 @@ namespace Simple.Interpreter.Scoping
             }
         }
 
+        private MethodInfo? TryGetConcreteGenericImplementation(MethodInfo method, object[]? args)
+        {
+            string signatureKey = $"{method.Name}[{string.Join(',', args.Select(a => a.GetType()))}]";
+            if (_cachedConcreteGenerics.ContainsKey(signatureKey))
+            {
+                return _cachedConcreteGenerics[signatureKey];
+            }
+            List<Type> concreteParameterTypes = new List<Type>();
+            var methodParameters = method.GetParameters();
+            try
+            {
+                for (int i = 0; i < args.Length; i++)
+                {
+                    if (methodParameters[i].ParameterType == args[i].GetType())
+                    {
+                        continue;
+                    }
+                    concreteParameterTypes.Add(args[i].GetType());
+                }
+                var concreteMethodInfo = method.MakeGenericMethod(concreteParameterTypes.ToArray());
+                _cachedConcreteGenerics[signatureKey] = concreteMethodInfo;
+                return concreteMethodInfo;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
         /// <summary>
         /// Attempts to find a matching method implementation from a list of methods based on the provided arguments.
         /// It first tries to find an exact match. If that fails, it looks for a method with optional parameters that can accommodate the given arguments.
@@ -320,7 +353,11 @@ namespace Simple.Interpreter.Scoping
                     // Check if we can construct a concrete method from the arguments
                     try
                     {
-                        concreteMethod = method.MakeGenericMethod(args.Select(a => a.GetType()).ToArray());
+                        concreteMethod = TryGetConcreteGenericImplementation(method, args);
+                        if (concreteMethod is null)
+                        {
+                            continue;
+                        }
                         parameters = concreteMethod.GetParameters();
                     }
                     catch (ArgumentException)

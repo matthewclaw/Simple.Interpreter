@@ -150,7 +150,30 @@ namespace Simple.Interpreter.Tests.Scoping
 
             Assert.True(result);
             Assert.Equal("hello", value);
+
+
+            result = map.TryInvokeMethod(obj, "GenericMethod", new object[] { "hello, ", "world!" }, out value);
+
+            Assert.True(result);
+            Assert.Equal("hello, world!", value);
         }
+        [Fact]
+        public void TryInvokeGenericMethod_ReturnsFalse_WhenMethodParametersAreLessThanArgs()
+        {
+            var obj = new TestObject();
+            var map = new ObjectMemberMap(typeof(TestObject));
+
+            bool result = map.TryInvokeMethod(obj, "GenericMethod", new object[] { 10, 12 }, out var value);
+
+            Assert.False(result);
+            Assert.Null(value);
+
+            result = map.TryInvokeMethod(obj, "GenericMethod", new object[] { "hello", 42 }, out value);
+
+            Assert.False(result);
+            Assert.Null(value);
+        }
+
         [Fact]
         public void TryInvokeMethod_ReturnsCorrectSum()
         {
