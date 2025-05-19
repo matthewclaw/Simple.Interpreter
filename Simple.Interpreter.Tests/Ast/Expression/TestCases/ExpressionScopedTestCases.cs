@@ -28,7 +28,7 @@ namespace Simple.Interpreter.Tests.Ast.Expression.TestCases
             yield return new ExpressionScopeTest(expression: "value in [42,50.2]", variables: new Dictionary<string, object> { { "value", 50.2 } }, errorExpected: false, expectedValue: true);
             yield return new ExpressionScopeTest(expression: "value in [42.1,50.2]", variables: new Dictionary<string, object> { { "value", 50.2 } }, errorExpected: false, expectedValue: true);
             yield return new ExpressionScopeTest(expression: "context.MyMethod()", variables: new Dictionary<string, object> { { "context", new ExpressionTestObject() } }, errorExpected: false, expectedValue: "foo");
-            yield return new ExpressionScopeTest(expression: "context.MyProperty2", variables: new Dictionary<string, object> { { "context", new ExpressionTestObject() } }, errorExpected: false, expectedValue: "foo");
+            yield return new ExpressionScopeTest(expression: "context.MyField", variables: new Dictionary<string, object> { { "context", new ExpressionTestObject() } }, errorExpected: false, expectedValue: "foo");
             yield return new ExpressionScopeTest(expression: "context.MyProperty2", variables: new Dictionary<string, object>(), errorExpected: true);
             yield return new ExpressionScopeTest(expression: "context.MyProperty33", variables: new Dictionary<string, object> { { "context", new ExpressionTestObject() } }, errorExpected: true);
             yield return new ExpressionScopeTest(expression: "context.MyProperty", variables: new Dictionary<string, object> { { "context", new ExpressionTestObject() } }, errorExpected: false, expectedValue: 42);
