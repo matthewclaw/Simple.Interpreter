@@ -31,7 +31,7 @@ namespace Simple.Interpreter.Tests.Scoping
         public void MapMembers_MapsPublicPropertiesFieldsAndMethods()
         {
             // Arrange
-            var expectedMethodCount = 7;
+            var expectedMethodCount = 8;
 
             // Act
             var map = new ObjectMemberMap(typeof(TestObject));
@@ -265,10 +265,12 @@ namespace Simple.Interpreter.Tests.Scoping
             var map = new ObjectMemberMap(typeof(TestObject));
 
             // Act
-            bool result = map.TryInvokeMethod(obj, "PublicMethodWithOptionalParams", new object[] { 1 });
+            bool actualOneOptionalParamTryInvokeResult = map.TryInvokeMethod(obj, "PublicMethodWithOptionalParams", new object[] { 1 });
+            bool actualNoOptionalParamsTryInvokeResult = map.TryInvokeMethod(obj, "PublicMethodWithAllOptionalParams");
 
             // Assert
-            Assert.True(result);
+            Assert.True(actualOneOptionalParamTryInvokeResult);
+            Assert.True(actualNoOptionalParamsTryInvokeResult);
         }
 
         [Fact]

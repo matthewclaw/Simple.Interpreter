@@ -8,68 +8,61 @@ namespace Simple.Interpreter.Tests
 {
     public class BasicExpressionFunctionTests
     {
+        #region Public Methods
+
         [Fact]
-        public void Min_WithInts_ReturnsSmallest()
+        public void EndsWith_ValidParams_ReturnsCorrectly()
         {
             // Arrange
-            var value1 = 42;
-            var value2 = 69;
+            var value = "bar";
+            var testFor = "r";
 
             // Act
-            var result = BasicExpressionFunctions.Min(new object[] { value1, value2 });
+            var result = (bool)BasicExpressionFunctions.EndsWith(new object[] { value, testFor });
 
             // Assert
-            Assert.Equal(value1, result);
+            Assert.True(result);
         }
 
         [Fact]
-        public void Min_WithDoubles_ReturnsSmallest()
+        public void Max_WithDoubles_ReturnsLargest()
         {
             // Arrange
             var value1 = 42.5;
             var value2 = 68.999;
 
             // Act
-            var result = BasicExpressionFunctions.Min(new object[] { value1, value2 });
-
-            // Assert
-            Assert.Equal(value1, result);
-        }
-
-        [Fact]
-        public void Min_WithStrings_ReturnsShortest()
-        {
-            // Arrange
-            var value1 = "foo-bar";
-            var value2 = "foo";
-
-            // Act
-            var result = BasicExpressionFunctions.Min(new object[] { value1, value2 });
+            var result = BasicExpressionFunctions.Max(new object[] { value1, value2 });
 
             // Assert
             Assert.Equal(value2, result);
         }
 
         [Fact]
-        public void Min_WithOneNull_ReturnsNotNull()
+        public void Max_WithIncorrectParamCount_ThrowsArgumentException()
         {
             // Arrange
-            object? value1 = null;
-            var value2 = "foo";
+            bool wasExceptionThrown = false;
 
             // Act
-            var result = BasicExpressionFunctions.Min(new object[] { value1, value2 });
-
+            try
+            {
+                _ = BasicExpressionFunctions.Max(new object[] { 1, 2, 3, 4 });
+            }
+            catch
+            {
+                wasExceptionThrown = true;
+            }
             // Assert
-            Assert.Equal(value2, result);
+            Assert.True(wasExceptionThrown);
         }
 
         [Fact]
-        public void Max_WithOneNull_ReturnsNotNull()
+        public void Max_WithInts_ReturnsLargest()
         {
             // Arrange
-            object? value1 = null;
-            var value2 = "foo";
+            var value1 = 42;
+            var value2 = 69;
 
             // Act
             var result = BasicExpressionFunctions.Max(new object[] { value1, value2 });
@@ -100,126 +93,11 @@ namespace Simple.Interpreter.Tests
         }
 
         [Fact]
-        public void Min_WithMixTypes_ThrowsArgumentException()
+        public void Max_WithOneNull_ReturnsNotNull()
         {
             // Arrange
-            int value1 = 1;
+            object? value1 = null;
             var value2 = "foo";
-            bool wasExceptionThrown = false;
-
-            // Act
-            try
-            {
-                _ = BasicExpressionFunctions.Min(new object[] { value1, value2 });
-            }
-            catch
-            {
-                wasExceptionThrown = true;
-            }
-            // Assert
-            Assert.True(wasExceptionThrown);
-        }
-        [Fact]
-        public void Min_WithIncorrectParamCount_ThrowsArgumentException()
-        {
-            // Arrange
-            bool wasExceptionThrown = false;
-
-            // Act
-            try
-            {
-                _ = BasicExpressionFunctions.Min(new object[] { 1, 2, 3 });
-            }
-            catch
-            {
-                wasExceptionThrown = true;
-            }
-            // Assert
-            Assert.True(wasExceptionThrown);
-        }
-        [Fact]
-        public void Max_WithIncorrectParamCount_ThrowsArgumentException()
-        {
-            // Arrange
-            bool wasExceptionThrown = false;
-
-            // Act
-            try
-            {
-                _ = BasicExpressionFunctions.Max(new object[] { 1, 2, 3, 4 });
-            }
-            catch
-            {
-                wasExceptionThrown = true;
-            }
-            // Assert
-            Assert.True(wasExceptionThrown);
-        }
-        [Fact]
-        public void StartsWith_WithIncorrectParamCount_ThrowsArgumentException()
-        {
-            // Arrange
-            bool wasExceptionThrown = false;
-
-            // Act
-            try
-            {
-                _ = BasicExpressionFunctions.StartsWith(new object[] { "foo", "b", "x" });
-            }
-            catch
-            {
-                wasExceptionThrown = true;
-            }
-            // Assert
-            Assert.True(wasExceptionThrown);
-        }
-        [Fact]
-        public void StartsWith_ValidParams_ReturnsCorrectly()
-        {
-            // Arrange
-            var value = "foo";
-            var testFor = "f";
-
-            // Act
-            var result = (bool)BasicExpressionFunctions.StartsWith(new object[] { value, testFor });
-
-            // Assert
-            Assert.True(result);
-        }
-        [Fact]
-        public void EndsWith_ValidParams_ReturnsCorrectly()
-        {
-            // Arrange
-            var value = "bar";
-            var testFor = "r";
-
-            // Act
-            var result = (bool)BasicExpressionFunctions.EndsWith(new object[] { value, testFor });
-
-            // Assert
-            Assert.True(result);
-        }
-
-        [Fact]
-        public void Max_WithInts_ReturnsLargest()
-        {
-            // Arrange
-            var value1 = 42;
-            var value2 = 69;
-
-            // Act
-            var result = BasicExpressionFunctions.Max(new object[] { value1, value2 });
-
-            // Assert
-            Assert.Equal(value2, result);
-        }
-
-        [Fact]
-        public void Max_WithDoubles_ReturnsLargest()
-        {
-            // Arrange
-            var value1 = 42.5;
-            var value2 = 68.999;
 
             // Act
             var result = BasicExpressionFunctions.Max(new object[] { value1, value2 });
@@ -241,5 +119,136 @@ namespace Simple.Interpreter.Tests
             // Assert
             Assert.Equal(value1, result);
         }
+
+        [Fact]
+        public void Min_WithDoubles_ReturnsSmallest()
+        {
+            // Arrange
+            var value1 = 42.5;
+            var value2 = 68.999;
+
+            // Act
+            var result = BasicExpressionFunctions.Min(new object[] { value1, value2 });
+
+            // Assert
+            Assert.Equal(value1, result);
+        }
+
+        [Fact]
+        public void Min_WithIncorrectParamCount_ThrowsArgumentException()
+        {
+            // Arrange
+            bool wasExceptionThrown = false;
+
+            // Act
+            try
+            {
+                _ = BasicExpressionFunctions.Min(new object[] { 1, 2, 3 });
+            }
+            catch
+            {
+                wasExceptionThrown = true;
+            }
+            // Assert
+            Assert.True(wasExceptionThrown);
+        }
+
+        [Fact]
+        public void Min_WithInts_ReturnsSmallest()
+        {
+            // Arrange
+            var value1 = 42;
+            var value2 = 69;
+
+            // Act
+            var result = BasicExpressionFunctions.Min(new object[] { value1, value2 });
+
+            // Assert
+            Assert.Equal(value1, result);
+        }
+
+        [Fact]
+        public void Min_WithMixTypes_ThrowsArgumentException()
+        {
+            // Arrange
+            int value1 = 1;
+            var value2 = "foo";
+            bool wasExceptionThrown = false;
+
+            // Act
+            try
+            {
+                _ = BasicExpressionFunctions.Min(new object[] { value1, value2 });
+            }
+            catch
+            {
+                wasExceptionThrown = true;
+            }
+            // Assert
+            Assert.True(wasExceptionThrown);
+        }
+
+        [Fact]
+        public void Min_WithOneNull_ReturnsNotNull()
+        {
+            // Arrange
+            object? value1 = null;
+            var value2 = "foo";
+
+            // Act
+            var result = BasicExpressionFunctions.Min(new object[] { value1, value2 });
+
+            // Assert
+            Assert.Equal(value2, result);
+        }
+
+        [Fact]
+        public void Min_WithStrings_ReturnsShortest()
+        {
+            // Arrange
+            var value1 = "foo-bar";
+            var value2 = "foo";
+
+            // Act
+            var result = BasicExpressionFunctions.Min(new object[] { value1, value2 });
+
+            // Assert
+            Assert.Equal(value2, result);
+        }
+
+        [Fact]
+        public void StartsWith_ValidParams_ReturnsCorrectly()
+        {
+            // Arrange
+            var value = "foo";
+            var testFor = "f";
+
+            // Act
+            var result = (bool)BasicExpressionFunctions.StartsWith(new object[] { value, testFor });
+
+            // Assert
+            Assert.True(result);
+        }
+
+        [Fact]
+        public void StartsWith_WithIncorrectParamCount_ThrowsArgumentException()
+        {
+            // Arrange
+            bool wasExceptionThrown = false;
+
+            // Act
+            try
+            {
+                _ = BasicExpressionFunctions.StartsWith(new object[] { "foo", "b", "x" });
+            }
+            catch
+            {
+                wasExceptionThrown = true;
+            }
+            // Assert
+            Assert.True(wasExceptionThrown);
+        }
+
+        #endregion Public Methods
     }
 }
