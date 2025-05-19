@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -78,6 +79,7 @@ namespace Simple.Interpreter.Ast.Nodes
             return $"new {CSharpConstructorType()}[] {{ {string.Join(", ", _values.Select(CSharpItemFormat))} }}";
         }
 
+        [ExcludeFromCodeCoverage]
         public override string ToString()
         {
             return $"[{string.Join(", ", _values)}]";
@@ -94,6 +96,7 @@ namespace Simple.Interpreter.Ast.Nodes
         #endregion Protected Methods
     }
 
+    [ExcludeFromCodeCoverage]
     /// <summary>
     /// Abstract base class for list nodes.  Provides common functionality
     /// for handling lists of various data types within the AST.

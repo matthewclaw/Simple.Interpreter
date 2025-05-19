@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -10,7 +11,7 @@ namespace Simple.Interpreter.Ast.Nodes
     {
         #region Public Methods
 
-        public override string GetCSharp() => $"{Value}";
+        public override string GetCSharp() => $"{Value}".ToLower();
 
         #endregion Public Methods
     }
@@ -52,6 +53,7 @@ namespace Simple.Interpreter.Ast.Nodes
         #endregion Public Properties
     }
 
+    [ExcludeFromCodeCoverage]
     public abstract class ValueLiteralNode<T> : ValueLiteralBase
     {
         #region Private Fields
