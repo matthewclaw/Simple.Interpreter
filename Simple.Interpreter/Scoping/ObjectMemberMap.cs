@@ -305,6 +305,12 @@ namespace Simple.Interpreter.Scoping
             }
         }
 
+        /// <summary>
+        /// Attempts to create a concrete generic method implementation based on the provided arguments.
+        /// </summary>
+        /// <param name="method">The generic method definition to create a concrete implementation from.</param>
+        /// <param name="args">The arguments that will be passed to the method. Used to infer the generic type parameters.</param>
+        /// <returns>A MethodInfo representing the concrete generic method implementation, or null if a concrete implementation could not be created.</returns>
         private MethodInfo? TryGetConcreteGenericImplementation(MethodInfo method, object[]? args)
         {
             string signatureKey = $"{method.Name}[{string.Join(',', args.Select(a => a.GetType()))}]";
@@ -357,26 +363,14 @@ namespace Simple.Interpreter.Scoping
                 var parameters = method.GetParameters();
                 if (method.IsGenericMethodDefinition)
                 {
-                    // Check if we can construct a concrete method from the arguments
-                    try
+                    concreteMethod = TryGetConcreteGenericImplementation(method, args);
+                    if (concreteMethod is null)
                     {
-                        concreteMethod = TryGetConcreteGenericImplementation(method, args);
-                        if (concreteMethod is null)
-                        {
-                            continue;
-                        }
-                        parameters = concreteMethod.GetParameters();
+                        continue;
                     }
-                    catch (ArgumentException)
-                    {
-                        continue; //  The provided arguments did not satisfy the constraints of the generic method definition.
-                    }
-                }
-                else if (parameters.Length != argLength)
-                {
-                    continue;
-                }
+                    parameters = concreteMethod.GetParameters();
 
+                }
                 if (concreteMethod == null)
                 {
                     concreteMethod = method;
@@ -388,45 +382,45 @@ namespace Simple.Interpreter.Scoping
                 }
             }
 
-            // If no exact match is found, look for a method with optional parameters
-            foreach (var method in methods)
-            {
-                MethodInfo? concreteMethod = null;
-                var parameters = method.GetParameters();
-                if (method.IsGenericMethodDefinition)
-                {
-                    // Check if we can construct a concrete method from the arguments
-                    try
-                    {
-                        concreteMethod = method.MakeGenericMethod(args.Select(a => a.GetType()).ToArray());
-                        parameters = concreteMethod.GetParameters();
-                    }
-                    catch (ArgumentException)
-                    {
-                        continue; //  The provided arguments did not satisfy the constraints of the generic method definition.
-                    }
-                }
-                else if (parameters.Length < argLength)
-                {
-                    continue;
-                }
+            //// If no exact match is found, look for a method with optional parameters
+            //foreach (var method in methods)
+            //{
+            //    MethodInfo? concreteMethod = null;
+            //    var parameters = method.GetParameters();
+            //    if (method.IsGenericMethodDefinition)
+            //    {
+            //        // Check if we can construct a concrete method from the arguments
+            //        try
+            //        {
+            //            concreteMethod = method.MakeGenericMethod(args.Select(a => a.GetType()).ToArray());
+            //            parameters = concreteMethod.GetParameters();
+            //        }
+            //        catch (ArgumentException)
+            //        {
+            //            continue; //  The provided arguments did not satisfy the constraints of the generic method definition.
+            //        }
+            //    }
+            //    else if (parameters.Length < argLength)
+            //    {
+            //        continue;
+            //    }
 
-                var requiredParams = parameters.Count(p => !p.IsOptional);
-                if (requiredParams > argLength)
-                {
-                    continue;
-                }
+            //    var requiredParams = parameters.Count(p => !p.IsOptional);
+            //    if (requiredParams > argLength)
+            //    {
+            //        continue;
+            //    }
 
-                if (concreteMethod == null)
-                {
-                    concreteMethod = method;
-                }
+            //    if (concreteMethod == null)
+            //    {
+            //        concreteMethod = method;
+            //    }
 
-                if (IsSignatureMatch(concreteMethod, parameters, args))
-                {
-                    return concreteMethod;
-                }
-            }
+            //    if (IsSignatureMatch(concreteMethod, parameters, args))
+            //    {
+            //        return concreteMethod;
+            //    }
+            //}
 
             return null;
         }

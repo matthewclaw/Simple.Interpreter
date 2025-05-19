@@ -18,7 +18,7 @@ namespace Simple.Interpreter.Tests.Scoping.Models
         public void PublicMethodWithOptionalParams(int a, string b = "default") { }
         public T GenericMethod<T>(T input) => input;
         public string GenericMethod<T>(T input, string suffix) => input?.ToString() + suffix;
-        public T GenericMethodWithConstraint<T>(T input) where T : class => input;
+        public string GenericMethodWithConstraint<T>(T input, string suffix = "") where T : class => input.ToString() + suffix;
         public int Add(int a, int b) => a + b;
     }
 }
