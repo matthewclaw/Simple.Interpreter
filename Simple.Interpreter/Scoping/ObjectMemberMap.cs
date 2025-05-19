@@ -10,24 +10,31 @@ namespace Simple.Interpreter.Scoping
     {
         #region Public Fields
 
+        /// <summary>
+        /// Cache of concrete generic method implementations keyed by a signature string.
+        /// </summary>
+        public readonly Dictionary<string, MethodInfo> ConcreteGenericMethodCache;
+
+        /// <summary>
+        /// A dictionary mapping field names to their FieldInfo objects.
+        /// </summary>
         public readonly Dictionary<string, FieldInfo> Fields;
+
+        /// <summary>
+        /// A dictionary mapping method names to a list of MethodInfo objects, allowing for method overloading.
+        /// </summary>
         public readonly Dictionary<string, List<MethodInfo>> Methods;
-        private readonly Dictionary<string, MethodInfo> _cachedConcreteGenerics;
+
         public readonly string ObjectTypeName;
+
+        /// <summary>
+        /// A dictionary mapping property names to their PropertyInfo objects.
+        /// </summary>
         public readonly Dictionary<string, PropertyInfo> Properties;
 
         #endregion Public Fields
 
         #region Public Constructors
-
-        public ObjectMemberMap(string objectTypeName, Dictionary<string, PropertyInfo> properties, Dictionary<string, FieldInfo> fields, Dictionary<string, List<MethodInfo>> methods)
-        {
-            ObjectTypeName = objectTypeName;
-            Properties = properties;
-            Fields = fields;
-            Methods = methods;
-            _cachedConcreteGenerics = new Dictionary<string, MethodInfo>();
-        }
 
         public ObjectMemberMap(string objectTypeName, List<MemberInfo> members)
         {
@@ -35,7 +42,7 @@ namespace Simple.Interpreter.Scoping
             Properties = new Dictionary<string, PropertyInfo>();
             Fields = new Dictionary<string, FieldInfo>();
             Methods = new Dictionary<string, List<MethodInfo>>();
-            _cachedConcreteGenerics = new Dictionary<string, MethodInfo>();
+            ConcreteGenericMethodCache = new Dictionary<string, MethodInfo>();
             MapMembers(members);
         }
 
@@ -45,7 +52,7 @@ namespace Simple.Interpreter.Scoping
             Properties = new Dictionary<string, PropertyInfo>();
             Fields = new Dictionary<string, FieldInfo>();
             Methods = new Dictionary<string, List<MethodInfo>>();
-            _cachedConcreteGenerics = new Dictionary<string, MethodInfo>();
+            ConcreteGenericMethodCache = new Dictionary<string, MethodInfo>();
             MapMembers(type);
         }
 
@@ -301,9 +308,9 @@ namespace Simple.Interpreter.Scoping
         private MethodInfo? TryGetConcreteGenericImplementation(MethodInfo method, object[]? args)
         {
             string signatureKey = $"{method.Name}[{string.Join(',', args.Select(a => a.GetType()))}]";
-            if (_cachedConcreteGenerics.ContainsKey(signatureKey))
+            if (ConcreteGenericMethodCache.ContainsKey(signatureKey))
             {
-                return _cachedConcreteGenerics[signatureKey];
+                return ConcreteGenericMethodCache[signatureKey];
             }
             List<Type> concreteParameterTypes = new List<Type>();
             var methodParameters = method.GetParameters();
@@ -318,7 +325,7 @@ namespace Simple.Interpreter.Scoping
                     concreteParameterTypes.Add(args[i].GetType());
                 }
                 var concreteMethodInfo = method.MakeGenericMethod(concreteParameterTypes.ToArray());
-                _cachedConcreteGenerics[signatureKey] = concreteMethodInfo;
+                ConcreteGenericMethodCache[signatureKey] = concreteMethodInfo;
                 return concreteMethodInfo;
             }
             catch
