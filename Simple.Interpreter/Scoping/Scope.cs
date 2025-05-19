@@ -148,6 +148,18 @@ namespace Simple.Interpreter.Scoping
             SetVariable(name, type, null);
         }
 
+        /// <summary>
+        /// Registers a variable types without assigning values. This is useful for declaring variables before assigning values, or for expression validation
+        /// </summary>
+        /// <param name="variableTypes"></param>
+        public void RegisterVariableTypes(Dictionary<string, Type> variableTypes)
+        {
+            foreach (var item in variableTypes)
+            {
+                RegisterVariableType(item.Key, item.Value);
+            }
+        }
+
         public void SetVariable(string name, object value)
         {
             if (value?.Equals(null) ?? true)
@@ -271,7 +283,7 @@ namespace Simple.Interpreter.Scoping
         /// <param name="name">The name of the variable to set.</param>
         /// <param name="scopedValueType">The type of the variable's value.</param>
         /// <param name="value">The value to assign to the variable.</param>
-        private void SetVariable(string name, Type scopedValueType, object value)
+        private void SetVariable(string name, Type scopedValueType, object? value)
         {
             if (_internalVariables.ContainsKey(name))
             {

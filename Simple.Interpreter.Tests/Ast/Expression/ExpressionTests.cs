@@ -78,14 +78,31 @@ namespace Simple.Interpreter.Tests.Ast.Expression
         }
         [Theory]
         [ClassData(typeof(ExpressionValidationTestCases))]
-        public void Expression_Validate_ValidatesCorrectly(string expression, Dictionary<string, Type> variableTypes, List<string> expectedErrorParts)
+        public void Expression_Validate_ValidatesCorrectly(string expression, Dictionary<string, Type> variableTypes, List<string> expectedErrorParts, bool useRegister)
         {
             // Arrange
             var expectedErrorCount = expectedErrorParts.Count;
             var expectedResult = expectedErrorCount == 0;
+            bool actualResult = false;
+            List<Exception>? actualErrors = null;
 
             // Act
-            var actualResult = _expressionInterpreter.Validate(expression, variableTypes, out var actualErrors);
+            if (variableTypes is not null && variableTypes.Count > 0)
+            {
+                if (useRegister)
+                {
+                    _expressionInterpreter.GlobalScope.RegisterVariableTypes(variableTypes);
+                    actualResult = _expressionInterpreter.Validate(expression, out actualErrors);
+                }
+                else
+                {
+                    actualResult = _expressionInterpreter.Validate(expression, variableTypes, out actualErrors);
+                }
+            }
+            else
+            {
+                actualResult = _expressionInterpreter.Validate(expression, out actualErrors);
+            }
 
             // Assert
             Assert.Equal(expectedResult, actualResult);
