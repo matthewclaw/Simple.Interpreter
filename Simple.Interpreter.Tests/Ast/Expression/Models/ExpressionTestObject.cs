@@ -9,12 +9,12 @@ namespace Simple.Interpreter.Tests.Ast.Expression.Models
     public class ExpressionTestObject
     {
         public int MyProperty { get; set; }
-        public string MyProperty2 { get; set; }
+        public string MyField;
 
         public ExpressionTestObject()
         {
             MyProperty = 42;
-            MyProperty2 = "foo";
+            MyField = "foo";
         }
         public string MyMethod()
         {

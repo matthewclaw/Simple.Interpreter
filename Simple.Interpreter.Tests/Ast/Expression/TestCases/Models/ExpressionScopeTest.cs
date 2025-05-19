@@ -14,6 +14,7 @@ namespace Simple.Interpreter.Tests.Ast.Expression.TestCases.Models
         public readonly Dictionary<string, object>? Variables;
         public readonly bool ErrorExpected;
         public readonly object? ExpectedValue;
+        public readonly bool UseScope;
 
         public ExpressionScopeTest(string expression, Dictionary<string, object>? variables, bool errorExpected) : this(expression, variables, errorExpected, null) { }
         public ExpressionScopeTest(string expression, Dictionary<string, object>? variables, bool errorExpected, object? expectedValue)

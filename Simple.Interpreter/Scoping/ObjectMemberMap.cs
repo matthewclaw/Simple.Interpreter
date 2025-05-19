@@ -10,22 +10,31 @@ namespace Simple.Interpreter.Scoping
     {
         #region Public Fields
 
+        /// <summary>
+        /// Cache of concrete generic method implementations keyed by a signature string.
+        /// </summary>
+        public readonly Dictionary<string, MethodInfo> ConcreteGenericMethodCache;
+
+        /// <summary>
+        /// A dictionary mapping field names to their FieldInfo objects.
+        /// </summary>
         public readonly Dictionary<string, FieldInfo> Fields;
+
+        /// <summary>
+        /// A dictionary mapping method names to a list of MethodInfo objects, allowing for method overloading.
+        /// </summary>
         public readonly Dictionary<string, List<MethodInfo>> Methods;
+
         public readonly string ObjectTypeName;
+
+        /// <summary>
+        /// A dictionary mapping property names to their PropertyInfo objects.
+        /// </summary>
         public readonly Dictionary<string, PropertyInfo> Properties;
 
         #endregion Public Fields
 
         #region Public Constructors
-
-        public ObjectMemberMap(string objectTypeName, Dictionary<string, PropertyInfo> properties, Dictionary<string, FieldInfo> fields, Dictionary<string, List<MethodInfo>> methods)
-        {
-            ObjectTypeName = objectTypeName;
-            Properties = properties;
-            Fields = fields;
-            Methods = methods;
-        }
 
         public ObjectMemberMap(string objectTypeName, List<MemberInfo> members)
         {
@@ -33,6 +42,7 @@ namespace Simple.Interpreter.Scoping
             Properties = new Dictionary<string, PropertyInfo>();
             Fields = new Dictionary<string, FieldInfo>();
             Methods = new Dictionary<string, List<MethodInfo>>();
+            ConcreteGenericMethodCache = new Dictionary<string, MethodInfo>();
             MapMembers(members);
         }
 
@@ -42,6 +52,7 @@ namespace Simple.Interpreter.Scoping
             Properties = new Dictionary<string, PropertyInfo>();
             Fields = new Dictionary<string, FieldInfo>();
             Methods = new Dictionary<string, List<MethodInfo>>();
+            ConcreteGenericMethodCache = new Dictionary<string, MethodInfo>();
             MapMembers(type);
         }
 
@@ -295,6 +306,41 @@ namespace Simple.Interpreter.Scoping
         }
 
         /// <summary>
+        /// Attempts to create a concrete generic method implementation based on the provided arguments.
+        /// </summary>
+        /// <param name="method">The generic method definition to create a concrete implementation from.</param>
+        /// <param name="args">The arguments that will be passed to the method. Used to infer the generic type parameters.</param>
+        /// <returns>A MethodInfo representing the concrete generic method implementation, or null if a concrete implementation could not be created.</returns>
+        private MethodInfo? TryGetConcreteGenericImplementation(MethodInfo method, object[]? args)
+        {
+            string signatureKey = $"{method.Name}[{string.Join(',', args.Select(a => a.GetType()))}]";
+            if (ConcreteGenericMethodCache.ContainsKey(signatureKey))
+            {
+                return ConcreteGenericMethodCache[signatureKey];
+            }
+            List<Type> concreteParameterTypes = new List<Type>();
+            var methodParameters = method.GetParameters();
+            try
+            {
+                for (int i = 0; i < args.Length; i++)
+                {
+                    if (methodParameters[i].ParameterType == args[i].GetType())
+                    {
+                        continue;
+                    }
+                    concreteParameterTypes.Add(args[i].GetType());
+                }
+                var concreteMethodInfo = method.MakeGenericMethod(concreteParameterTypes.ToArray());
+                ConcreteGenericMethodCache[signatureKey] = concreteMethodInfo;
+                return concreteMethodInfo;
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
         /// Attempts to find a matching method implementation from a list of methods based on the provided arguments.
         /// It first tries to find an exact match. If that fails, it looks for a method with optional parameters that can accommodate the given arguments.
         /// </summary>
@@ -317,22 +363,14 @@ namespace Simple.Interpreter.Scoping
                 var parameters = method.GetParameters();
                 if (method.IsGenericMethodDefinition)
                 {
-                    // Check if we can construct a concrete method from the arguments
-                    try
+                    concreteMethod = TryGetConcreteGenericImplementation(method, args);
+                    if (concreteMethod is null)
                     {
-                        concreteMethod = method.MakeGenericMethod(args.Select(a => a.GetType()).ToArray());
-                        parameters = concreteMethod.GetParameters();
+                        continue;
                     }
-                    catch (ArgumentException)
-                    {
-                        continue; //  The provided arguments did not satisfy the constraints of the generic method definition.
-                    }
-                }
-                else if (parameters.Length != argLength)
-                {
-                    continue;
-                }
+                    parameters = concreteMethod.GetParameters();
 
+                }
                 if (concreteMethod == null)
                 {
                     concreteMethod = method;
@@ -344,45 +382,45 @@ namespace Simple.Interpreter.Scoping
                 }
             }
 
-            // If no exact match is found, look for a method with optional parameters
-            foreach (var method in methods)
-            {
-                MethodInfo? concreteMethod = null;
-                var parameters = method.GetParameters();
-                if (method.IsGenericMethodDefinition)
-                {
-                    // Check if we can construct a concrete method from the arguments
-                    try
-                    {
-                        concreteMethod = method.MakeGenericMethod(args.Select(a => a.GetType()).ToArray());
-                        parameters = concreteMethod.GetParameters();
-                    }
-                    catch (ArgumentException)
-                    {
-                        continue; //  The provided arguments did not satisfy the constraints of the generic method definition.
-                    }
-                }
-                else if (parameters.Length < argLength)
-                {
-                    continue;
-                }
+            //// If no exact match is found, look for a method with optional parameters
+            //foreach (var method in methods)
+            //{
+            //    MethodInfo? concreteMethod = null;
+            //    var parameters = method.GetParameters();
+            //    if (method.IsGenericMethodDefinition)
+            //    {
+            //        // Check if we can construct a concrete method from the arguments
+            //        try
+            //        {
+            //            concreteMethod = method.MakeGenericMethod(args.Select(a => a.GetType()).ToArray());
+            //            parameters = concreteMethod.GetParameters();
+            //        }
+            //        catch (ArgumentException)
+            //        {
+            //            continue; //  The provided arguments did not satisfy the constraints of the generic method definition.
+            //        }
+            //    }
+            //    else if (parameters.Length < argLength)
+            //    {
+            //        continue;
+            //    }
 
-                var requiredParams = parameters.Count(p => !p.IsOptional);
-                if (requiredParams > argLength)
-                {
-                    continue;
-                }
+            //    var requiredParams = parameters.Count(p => !p.IsOptional);
+            //    if (requiredParams > argLength)
+            //    {
+            //        continue;
+            //    }
 
-                if (concreteMethod == null)
-                {
-                    concreteMethod = method;
-                }
+            //    if (concreteMethod == null)
+            //    {
+            //        concreteMethod = method;
+            //    }
 
-                if (IsSignatureMatch(concreteMethod, parameters, args))
-                {
-                    return concreteMethod;
-                }
-            }
+            //    if (IsSignatureMatch(concreteMethod, parameters, args))
+            //    {
+            //        return concreteMethod;
+            //    }
+            //}
 
             return null;
         }

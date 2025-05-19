@@ -32,7 +32,7 @@ namespace Simple.Interpreter.Extensions
                 if (parameters.Length != (args?.Length ?? 0))
                 {
                     invokeArgs = new object[parameters.Length];
-                    if (args is null)
+                    if (args is null || args.Length == 0)
                     {
                         args = Array.Empty<object>();
                     }
