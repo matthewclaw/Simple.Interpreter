@@ -17,6 +17,7 @@ namespace Simple.Interpreter.Tests.Ast.Expression.TestCases
             yield return new ExpressionValidationTest("2+1 if(5+5) else 4", new List<string> { "If condition must return a boolean value" });
             yield return new ExpressionValidationTest("2+1 if(context==true) else 4", new Dictionary<string, Type>() { { "context", typeof(bool) } }, true);
             yield return new ExpressionValidationTest("2+1 if(context==false) else 4", new Dictionary<string, Type>() { { "context", typeof(bool) } }, false);
+            yield return new ExpressionValidationTest("2+1 if(2+5) else 4", new Dictionary<string, Type>() { { "context", typeof(bool) } }, new List<string> { "If condition must return a boolean value" }, false);
             yield return new ExpressionValidationTest("foo+' test'", new Dictionary<string, Type> { { "foo", typeof(string) } }, false);
             yield return new ExpressionValidationTest("bar+' test'", new Dictionary<string, Type> { { "foo", typeof(string) } }, new List<string> { "'bar' is not a valid variable in scope" }, false);
             yield return new ExpressionValidationTest("context.MyProperty+1", new Dictionary<string, Type> { { "context", typeof(ExpressionTestObject) } },true);
