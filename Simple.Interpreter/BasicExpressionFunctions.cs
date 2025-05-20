@@ -72,32 +72,18 @@ namespace Simple.Interpreter
         /// <summary>
         /// Tests whether the supplied string starts with the supplied value
         /// </summary>
-        /// <param name="args">Accepts 2 arguments in the array, first being the string to test and second being the value to look for</param>
         /// <returns>True, if the first string starts with the second</returns>
-        public static object StartsWith(object[] args)
+        public static bool StartsWith(string stringToTest, string value)
         {
-            if (args.Length != 2)
-            {
-                throw new ArgumentException("StartsWith expects 2 arguments");
-            }
-            var stringToTest = args[0]!.ToString();
-            var value = args[1]!.ToString();
            return stringToTest!.StartsWith(value!);
         }
 
         /// <summary>
         /// Tests whether the supplied string ends with the supplied value
         /// </summary>
-        /// <param name="args">Accepts 2 arguments in the array, first being the string to test and second being the value to look for</param>
         /// <returns>True, if the first string ends with the second</returns>
-        public static object EndsWith(object[] args)
+        public static bool EndsWith(string stringToTest, string value)
         {
-            if (args.Length != 2)
-            {
-                throw new ArgumentException("StartsWith expects 2 arguments");
-            }
-            var stringToTest = args[0]!.ToString();
-            var value = args[1]!.ToString();
            return stringToTest!.EndsWith(value!);
         }
     }
