@@ -20,8 +20,7 @@ namespace Simple.Interpreter.Demo.Examples
         {
             ExpressionInterpreter interpreter = new ExpressionInterpreter();
             //Register custom Function
-            // PS: Due to limitations, custom functions must accept either an `object` or an `object[]` and return an `object`. Sorry :/
-            interpreter.RegisterFunction("isUserOlderThan", IsUserOlderThan);
+            interpreter.RegisterFunction<User, int, bool>("isUserOlderThan", IsUserOlderThan);
 
             var frank = new User
             {
@@ -42,7 +41,7 @@ namespace Simple.Interpreter.Demo.Examples
             expression.SetScope(scope);
 
             var result = expression.Evaluate();
-            if(result is bool isOldEnough && isOldEnough)
+            if (result is bool isOldEnough && isOldEnough)
             {
                 Console.WriteLine($"{frank} is Older than {ageToTest}");
             }
@@ -55,14 +54,8 @@ namespace Simple.Interpreter.Demo.Examples
         }
 
 
-        private static object IsUserOlderThan(object[] args)
+        private static bool IsUserOlderThan(User user, int age)
         {
-            if (args.Length != 2)
-            {
-                throw new ArgumentException($"{nameof(IsUserOlderThan)} expects 2 arguments");
-            }
-            User? user = args[0] as User;
-            int? age = args[1] as int?;
             bool result = user?.Age > age;
             return result;
         }

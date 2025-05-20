@@ -11,28 +11,21 @@ namespace Simple.Interpreter
         /// <summary>
         /// Determines the smallest value between two values (accepts numbers and strings) 
         /// </summary>
-        /// <param name="args">Accepts 2 arguments in the array</param>
         /// <returns>If numbers (double or int) are supplied, then the smallest value is return. Else if strings are supplied then the shortest one is returned.</returns>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public static object Min(object[] args)
+        public static object Min(object value1, object value2)
         {
-            if (args.Length != 2)
-            {
-                throw new ArgumentException("Min expects 2 arguments");
-            }
-            var a = args[0];
-            var b = args[1];
-            if (a == null || b == null) { return a ?? b; }
-            if (a is int ai && b is int bi)
+            if (value1 == null || value2 == null) { return value1 ?? value2; }
+            if (value1 is int ai && value2 is int bi)
             {
                 return Math.Min(ai, bi);
             }
-            if (a is double ad && b is double bd)
+            if (value1 is double ad && value2 is double bd)
             {
                 return Math.Min(ad, bd);
             }
-            if (a is string aStr && b is string bStr)
+            if (value1 is string aStr && value2 is string bStr)
             {
                 return aStr.Length < bStr.Length ? aStr : bStr;
             }
@@ -41,28 +34,21 @@ namespace Simple.Interpreter
         /// <summary>
         /// Determines the largest value between two values (accepts numbers and strings) 
         /// </summary>
-        /// <param name="args">Accepts 2 arguments in the array</param>
         /// <returns>If numbers (double or int) are supplied, then the largest value is return. Else if strings are supplied then the longest one is returned.</returns>
         /// <exception cref="ArgumentException"></exception>
         /// <exception cref="InvalidOperationException"></exception>
-        public static object Max(object[] args)
+        public static object Max(object value1, object value2)
         {
-            if (args.Length != 2)
-            {
-                throw new ArgumentException("Max expects 2 arguments");
-            }
-            var a = args[0];
-            var b = args[1];
-            if (a == null || b == null) { return a ?? b; }
-            if (a is int ai && b is int bi)
+            if (value1 == null || value2 == null) { return value1 ?? value2; }
+            if (value1 is int ai && value2 is int bi)
             {
                 return Math.Max(ai, bi);
             }
-            if (a is double ad && b is double bd)
+            if (value1 is double ad && value2 is double bd)
             {
                 return Math.Max(ad, bd);
             }
-            if (a is string aStr && b is string bStr)
+            if (value1 is string aStr && value2 is string bStr)
             {
                 return aStr.Length > bStr.Length ? aStr : bStr;
             }
@@ -72,32 +58,18 @@ namespace Simple.Interpreter
         /// <summary>
         /// Tests whether the supplied string starts with the supplied value
         /// </summary>
-        /// <param name="args">Accepts 2 arguments in the array, first being the string to test and second being the value to look for</param>
         /// <returns>True, if the first string starts with the second</returns>
-        public static object StartsWith(object[] args)
+        public static bool StartsWith(string stringToTest, string value)
         {
-            if (args.Length != 2)
-            {
-                throw new ArgumentException("StartsWith expects 2 arguments");
-            }
-            var stringToTest = args[0]!.ToString();
-            var value = args[1]!.ToString();
            return stringToTest!.StartsWith(value!);
         }
 
         /// <summary>
         /// Tests whether the supplied string ends with the supplied value
         /// </summary>
-        /// <param name="args">Accepts 2 arguments in the array, first being the string to test and second being the value to look for</param>
         /// <returns>True, if the first string ends with the second</returns>
-        public static object EndsWith(object[] args)
+        public static bool EndsWith(string stringToTest, string value)
         {
-            if (args.Length != 2)
-            {
-                throw new ArgumentException("StartsWith expects 2 arguments");
-            }
-            var stringToTest = args[0]!.ToString();
-            var value = args[1]!.ToString();
            return stringToTest!.EndsWith(value!);
         }
     }

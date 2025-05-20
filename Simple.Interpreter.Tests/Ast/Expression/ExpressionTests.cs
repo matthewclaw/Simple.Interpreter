@@ -1,12 +1,5 @@
 ﻿using Simple.Interpreter.Ast;
-using Simple.Interpreter.Ast.Interfaces;
 using Simple.Interpreter.Tests.Ast.Expression.TestCases;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Simple.Interpreter.Tests.Ast.Expression
 {

@@ -39,18 +39,37 @@ namespace Simple.Interpreter.Ast.Interfaces
         /// <summary>
         /// Registers a function that can be called within pseudo-code expressions.
         /// </summary>
-        /// <typeparam name="T">The return type of the function</typeparam>
         /// <param name="functionName">The function's name/keyword</param>
         /// <param name="implementation"></param>
-        void RegisterFunction<T>(string functionName, Func<object, T> implementation);
+        void RegisterFunction<TParam, TParam2, TParam3, TParam4, TResult>(string functionName, Func<TParam, TParam2, TParam3, TParam4, TResult> implementation);
 
         /// <summary>
         /// Registers a function that can be called within pseudo-code expressions.
         /// </summary>
-        /// <typeparam name="T">The return type of the function</typeparam>
         /// <param name="functionName">The function's name/keyword</param>
         /// <param name="implementation"></param>
-        void RegisterFunction<T>(string functionName, Func<object[], T> implementation);
+        void RegisterFunction<TParam, TParam2, TParam3, TResult>(string functionName, Func<TParam, TParam2, TParam3, TResult> implementation);
+
+        /// <summary>
+        /// Registers a function that can be called within pseudo-code expressions.
+        /// </summary>
+        /// <param name="functionName">The function's name/keyword</param>
+        /// <param name="implementation"></param>
+        void RegisterFunction<TParam, TParam2, TResult>(string functionName, Func<TParam, TParam2, TResult> implementation);
+
+        /// <summary>
+        /// Registers a function that can be called within pseudo-code expressions.
+        /// </summary>
+        /// <param name="functionName">The function's name/keyword</param>
+        /// <param name="implementation"></param>
+        void RegisterFunction<TParam, TResult>(string functionName, Func<TParam, TResult> implementation);
+
+        /// <summary>
+        /// Registers a function that can be called within pseudo-code expressions.
+        /// </summary>
+        /// <param name="functionName">The function's name/keyword</param>
+        /// <param name="implementation"></param>
+        void RegisterFunction<TResult>(string functionName, Func<TResult> implementation);
 
         /// <summary>
         /// Sets the global scope of the interpreter with the provided dictionary. Each Expression created by this interpreter will have access to the variables in this scope.
