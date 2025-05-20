@@ -71,15 +71,6 @@ namespace Simple.Interpreter.Ast.Interfaces
         /// <param name="implementation"></param>
         void RegisterFunction<TResult>(string functionName, Func<TResult> implementation);
 
-
-        /// <summary>
-        /// Registers a function that can be called within pseudo-code expressions.
-        /// </summary>
-        /// <typeparam name="T">The return type of the function</typeparam>
-        /// <param name="functionName">The function's name/keyword</param>
-        /// <param name="implementation"></param>
-        void RegisterFunction<T>(string functionName, Func<object[], T> implementation);
-
         /// <summary>
         /// Sets the global scope of the interpreter with the provided dictionary. Each Expression created by this interpreter will have access to the variables in this scope.
         /// </summary>

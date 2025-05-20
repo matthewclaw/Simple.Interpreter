@@ -34,8 +34,8 @@ namespace Simple.Interpreter.Ast
         {
             GlobalScope = new Scope();
             RegisteredFunctions = new Dictionary<string, Func<object[], object>>();
-            RegisterFunction("min", BasicExpressionFunctions.Min);
-            RegisterFunction("max", BasicExpressionFunctions.Max);
+            RegisterFunction<object,object,object>("min", BasicExpressionFunctions.Min);
+            RegisterFunction<object,object,object>("max", BasicExpressionFunctions.Max);
             RegisterFunction<string, string, bool>("startsWith", BasicExpressionFunctions.StartsWith);
             RegisterFunction<string, string, bool>("endsWith", BasicExpressionFunctions.EndsWith);
         }
@@ -66,11 +66,6 @@ namespace Simple.Interpreter.Ast
                 }
                 throw new ArgumentException($"Exception while parsing expression \"{expression}\" near token {tokenPosition} (\"{tokens[tokenPosition]}\") Error: {ex.Message}", ex);
             }
-        }
-
-        public void RegisterFunction<T>(string functionName, Func<object[], T> implementation)
-        {
-            RegisteredFunctions.Add(functionName, array => implementation(array));
         }
 
         public void RegisterFunction<TResult>(string functionName, Func<TResult> implementation)
