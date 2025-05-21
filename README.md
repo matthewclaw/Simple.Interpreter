@@ -192,7 +192,6 @@ private static bool IsUserOlderThan(User user, int age)
 
 ExpressionInterpreter interpreter = new ExpressionInterpreter();
 //Register custom Function
-// PS: Due to limitations, custom functions must accept either an `object` or an `object[]` and return an `object`. Sorry :/
 interpreter.RegisterFunction("isUserOlderThan", IsUserOlderThan);
 
 var frank = new User
