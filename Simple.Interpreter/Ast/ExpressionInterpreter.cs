@@ -16,7 +16,8 @@ namespace Simple.Interpreter.Ast
     {
         #region Public Fields
 
-        public const string TokenPattern = @"((not\s)?in\s)|==|!=|>=|<=|>|<|and|or|(""[^""]*""|'[^']*'|\d+\.?\d*|\w+(\.\w+)*|\[|\]|[\,\+\-\*\/\(\)])";
+        //public const string TokenPattern = @"((not\s)?in\s)|==|!=|>=|<=|>|<|and|or|(""[^""]*""|'[^']*'|\d+\.?\d*|\w+(\.\w+)*|\[|\]|[\,\+\-\*\/\(\)])";
+       public const string TokenPattern = TokenRegex.COMPILED;
 
         #endregion Public Fields
 
