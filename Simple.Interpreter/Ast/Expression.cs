@@ -1,4 +1,5 @@
-﻿using Simple.Interpreter.Ast.Nodes;
+﻿using Microsoft.Extensions.Logging;
+using Simple.Interpreter.Ast.Nodes;
 using Simple.Interpreter.Extensions;
 using Simple.Interpreter.Scoping;
 using System.Reflection;
@@ -20,17 +21,40 @@ namespace Simple.Interpreter.Ast
         #region Private Fields
 
         private readonly ExpressionInterpreter _interpreter;
+        private ILogger? _logger;
+        private bool _loggingEnable = true;
         private Scope _scope;
 
         #endregion Private Fields
 
         #region Public Constructors
 
+        public Expression(ExpressionNode tree, ExpressionInterpreter interpreter, ILoggerFactory? loggerFactory) : this(tree, interpreter)
+        {
+            _logger = loggerFactory?.CreateLogger<Expression>();
+        }
+
         public Expression(ExpressionNode tree, ExpressionInterpreter interpreter)
         {
             _scope = new Scope(interpreter.GlobalScope);
             _interpreter = interpreter;
             Tree = tree;
+        }
+
+        public Expression WithDebugging(bool enable)
+        {
+            if (_logger is null)
+            {
+                throw new InvalidOperationException($"No Logger was found, please use {nameof(WithDebugging)}(ILoggerFactory, bool)");
+            }
+            _loggingEnable = enable;
+            return this;
+        }
+
+        public Expression WithDebugging(ILoggerFactory loggerFactory, bool enable)
+        {
+            _logger = loggerFactory.CreateLogger<Expression>();
+            return WithDebugging(enable);
         }
 
         #endregion Public Constructors
@@ -43,7 +67,10 @@ namespace Simple.Interpreter.Ast
         /// <returns>The result of evaluating the expression tree.</returns>
         public object Evaluate()
         {
-            return EvaluateExpressionNode(Tree);
+            Log("Evaluating Expression: {expression}...", Tree);
+            var result = EvaluateExpressionNode(Tree);
+            Log("Expression Evaluated: {result}", result);
+            return result;
         }
 
         /// <summary>
@@ -121,6 +148,15 @@ namespace Simple.Interpreter.Ast
             return ValidateVariables(out errors);
         }
 
+        private void Log(string message, params object[] args)
+        {
+            if (!_loggingEnable || _scope.IsValidationScope)
+            {
+                return;
+            }
+            _logger?.LogDebug(message, args);
+        }
+
         /// <summary>
         /// Validates the variable reference, member calls and function calls within the expression tree.
         /// It attempts to evaluate each member and function call node and catches any exceptions that occur during evaluation.
@@ -130,6 +166,8 @@ namespace Simple.Interpreter.Ast
         /// <returns>True if all member and function calls are valid (no exceptions were thrown), false otherwise.</returns>
         public bool ValidateVariables(out List<Exception> errors)
         {
+            var previousLoggingEnable = _loggingEnable;
+            _loggingEnable = false;
             errors = new List<Exception>();
             var nodes = Tree.GetChildren(true);
             nodes.Insert(0, Tree); // This is to ensure the top level node is also tested
@@ -146,6 +184,7 @@ namespace Simple.Interpreter.Ast
                     errors.Add(e);
                 }
             }
+            _loggingEnable = previousLoggingEnable;
             return errors.Count == 0;
         }
 
@@ -165,6 +204,7 @@ namespace Simple.Interpreter.Ast
         /// <returns>The result of the binary operation, or null if the operation is not supported.</returns>
         private object EvaluateBinaryOperation(string op, object left, object right)
         {
+            Log("Evaluating: {left} {operator} {right}...", left, op, right);
             if (left is bool leftBool && right is bool rightBool)
             {
                 switch (op)
@@ -210,10 +250,7 @@ namespace Simple.Interpreter.Ast
                 }
                 return arithmeticResult;
             }
-            else
-            {
-                return null;
-            }
+            return null;
         }
 
         /// <summary>
@@ -228,13 +265,16 @@ namespace Simple.Interpreter.Ast
             {
                 if (node is BinaryOperationNode binaryNode)
                 {
+                    Log("Evaluating Binary Node: {node}...", node);
                     object left = EvaluateExpressionNode(binaryNode.Left);
                     if (binaryNode.Right is ListNodeBase rightList)
                     {
                         return EvaluationBinaryListOperation(left, binaryNode.Operator, rightList);
                     }
                     object right = EvaluateExpressionNode(binaryNode.Right);
-                    return EvaluateBinaryOperation(binaryNode.Operator, left, right);
+                    var result = EvaluateBinaryOperation(binaryNode.Operator, left, right);
+                    Log("Evaluated: {result}", result);
+                    return result;
                 }
                 else if (node is ValueLiteralBase valueNode)
                 {
@@ -242,9 +282,15 @@ namespace Simple.Interpreter.Ast
                 }
                 else if (node is IdentifierNode identifierNode)
                 {
+                    Log("Evaluating Identifier Node: {node}...", node);
                     if (_scope.TryGetVariable(identifierNode.Name, out var variable))
                     {
-                        return variable.Value;
+                        var result = variable.Value;
+                        if (result is not null)
+                        {
+                            Log("Evaluated: {result}", result);
+                        }
+                        return result;
                     }
                     else
                     {
@@ -253,19 +299,38 @@ namespace Simple.Interpreter.Ast
                 }
                 else if (node is StringListNode listNode)
                 {
+                    Log("Evaluating String List Node: {node}...", node);
                     return listNode.Values;
                 }
                 else if (node is FunctionCallNode functionCallNode)
                 {
-                    return EvaluateFunctionCallNode(functionCallNode);
+                    Log("Evaluating Function Call Node: {node}...", node);
+                    var result = EvaluateFunctionCallNode(functionCallNode);
+                    if (result is not null)
+                    {
+                        Log("Function Call Evaluated: {result}", result);
+                    }
+                    return result;
                 }
                 else if (node is MemberCallNode memberCallNode)
                 {
-                    return EvaluateMemberCallNode(memberCallNode);
+                    Log("Evaluating Member Node: {node}...", node);
+                    var result = EvaluateMemberCallNode(memberCallNode);
+                    if (result is not null)
+                    {
+                        Log("Member Evaluated: {result}", result);
+                    }
+                    return result;
                 }
                 else if (node is TernaryNode ternaryNode)
                 {
-                    return EvaluateTernaryNode(ternaryNode);
+                    Log("Evaluating Ternary Node: {node}...", node);
+                    var result = EvaluateTernaryNode(ternaryNode);
+                    if (result is not null)
+                    {
+                        Log("Ternary Evaluated: {result}", result);
+                    }
+                    return result;
                 }
                 return null;
             }
@@ -295,6 +360,7 @@ namespace Simple.Interpreter.Ast
                     }
                     throw new ArgumentException($"'{node.Name}' is not a registered function");
                 }
+                Log("Evaluating Registered Function: {node}...", node);
                 return funcDelegate(arguments);
             }
             if (!_scope.TryGetVariable(node.Parent, out var contextObject))
@@ -309,6 +375,7 @@ namespace Simple.Interpreter.Ast
             {
                 return null;
             }
+            Log("Attempting to invoke {method}...", node.ToString(arguments));
             var callSuccessful = contextMember!.TryInvoke(contextObject.Value, out var callResult, arguments);
             if (!callSuccessful)
             {
@@ -352,6 +419,7 @@ namespace Simple.Interpreter.Ast
 
         private object EvaluateTernaryNode(TernaryNode node)
         {
+            Log("Evaluating Ternary Condition: {node}...", node.Condition);
             var conditionResultRaw = EvaluateExpressionNode(node.Condition);
             bool? conditionResult = false;
             if (conditionResultRaw != null && !(conditionResultRaw is bool))
@@ -361,8 +429,10 @@ namespace Simple.Interpreter.Ast
             conditionResult = conditionResultRaw as bool?;
             if (conditionResult ?? false)
             {
+                Log("Condition met, evaluating Truthy Node: {node}", node.Truthy);
                 return EvaluateExpressionNode(node.Truthy);
             }
+            Log("Condition not met, evaluating Falsy Node: {node}", node.Falsy);
             return EvaluateExpressionNode(node.Falsy);
         }
 

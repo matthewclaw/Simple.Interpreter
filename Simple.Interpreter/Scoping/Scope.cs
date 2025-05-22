@@ -34,7 +34,7 @@ namespace Simple.Interpreter.Scoping
         #endregion Private Fields
 
         #region Public Constructors
-
+        public bool IsValidationScope => _internalVariables.Values.All(v => v.Value is null) && (_parent?.IsValidationScope ?? true);
         public Scope()
         {
             _internalVariables = new Dictionary<string, Variable>();

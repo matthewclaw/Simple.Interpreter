@@ -39,6 +39,7 @@ namespace Simple.Interpreter.Ast.Nodes
         #region Public Methods
 
         public override string GetCSharp() => $"\"{Value}\"";
+        public override string ToString() => $"\"{Value}\"";
 
         #endregion Public Methods
     }

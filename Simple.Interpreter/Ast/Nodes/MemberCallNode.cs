@@ -38,7 +38,10 @@ namespace Simple.Interpreter.Ast.Nodes
         {
             return $"{base.ToString()}({string.Join(", ", Arguments.Select(x => x.GetCSharp()))})";
         }
-
+        public string ToString(object[] evaluatedArgs)
+        {
+            return $"{base.ToString()}({string.Join(", ", evaluatedArgs.Select(a => a is string ? $"\"{a}\"" : a))})";
+        }
         public override string ToString()
         {
             return $"{base.ToString()}({string.Join(", ", Arguments.Select(x => x.ToString()))})";

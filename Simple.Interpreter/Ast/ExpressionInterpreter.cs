@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 using Simple.Interpreter;
 using Simple.Interpreter.Ast.Interfaces;
 using Simple.Interpreter.Ast.Nodes;
@@ -23,13 +24,14 @@ namespace Simple.Interpreter.Ast
         #region Public Properties
 
         public Scope GlobalScope { get; private set; }
+        private readonly ILoggerFactory? _loggerFactory;
 
         public Dictionary<string, Func<object[], object>> RegisteredFunctions { get; private set; }
 
-        #endregion Public Properties
-
-        #region Public Constructors
-
+        public ExpressionInterpreter(ILoggerFactory loggerFactory) : this()
+        {
+            _loggerFactory = loggerFactory;
+        }
         public ExpressionInterpreter()
         {
             GlobalScope = new Scope();
@@ -56,7 +58,7 @@ namespace Simple.Interpreter.Ast
                 {
                     throw new Exception("Mismatched parenthesis");
                 }
-                return new Expression(expressionTree, this);
+                return new Expression(expressionTree, this, _loggerFactory);
             }
             catch (Exception ex)
             {
