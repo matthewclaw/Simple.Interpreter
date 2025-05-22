@@ -191,6 +191,7 @@ private static bool IsUserOlderThan(User user, int age)
 }
 
 ExpressionInterpreter interpreter = new ExpressionInterpreter();
+
 //Register custom Function
 interpreter.RegisterFunction("isUserOlderThan", IsUserOlderThan);
 
@@ -223,6 +224,64 @@ else
 }
 ```
 *For more see the `Simple.Interpreter.Demo` project*
+### Logging
+The `Expression` evaluation process offers detailed step-by-step logging to aid developers in understanding and debugging complex expressions. This logging is performed at the `DEBUG` level and provides insight into variable resolution, function calls, operator applications, and intermediate results. To enable this verbose logging, ensure your application's logging configuration is set to `DEBUG` for the relevant logger. The `ExpressionInterpreter` leverages `ILoggerFactory` to create its internal logger; you can either provide an `ILoggerFactory` instance upon `ExpressionInterpreter` initialization, or if using dependency injection (DI), it will be automatically injected. For fine-grained control, you can also explicitly toggle this debugging output for a specific Expression instance using the `.WithDebugging(false|true)` method.
+#### Example
+```csharp
+ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+{
+    builder.AddConsole();
+    builder.SetMinimumLevel(LogLevel.Debug);
+});
+// Create an instance of the interpreter
+var interpreter = new ExpressionInterpreter(loggerFactory);
+
+// Define the expression
+string expressionString = "user.Age > 18 and user.City == 'Johannesburg'";
+
+var user = new User
+{
+    Name = "Alice",
+    Age = 25,
+    City = "Pretoria" 
+};
+var expression = interpreter.GetExpression(expressionString);
+expression.SetScopedVariable("user", alice);
+expression.Evaluate();
+```
+**Logging output:**
+```
+dbug: Simple.Interpreter.Ast.Expression[0]
+      Evaluating Expression: user.Age > 18 and user.City == "Johannesburg"...
+dbug: Simple.Interpreter.Ast.Expression[0]
+      Evaluating Binary Node: user.Age > 18 and user.City == "Johannesburg"...
+dbug: Simple.Interpreter.Ast.Expression[0]
+      Evaluating Binary Node: user.Age > 18...
+dbug: Simple.Interpreter.Ast.Expression[0]
+      Evaluating Member Node: user.Age...
+dbug: Simple.Interpreter.Ast.Expression[0]
+      Member Evaluated: 25
+dbug: Simple.Interpreter.Ast.Expression[0]
+      Evaluating: 25 > 18...
+dbug: Simple.Interpreter.Ast.Expression[0]
+      Evaluated: True
+dbug: Simple.Interpreter.Ast.Expression[0]
+      Evaluating Binary Node: user.City == "Johannesburg"...
+dbug: Simple.Interpreter.Ast.Expression[0]
+      Evaluating Member Node: user.City...
+dbug: Simple.Interpreter.Ast.Expression[0]
+      Member Evaluated: Pretoria
+dbug: Simple.Interpreter.Ast.Expression[0]
+      Evaluating: Pretoria == Johannesburg...
+dbug: Simple.Interpreter.Ast.Expression[0]
+      Evaluated: False
+dbug: Simple.Interpreter.Ast.Expression[0]
+      Evaluating: True and False...
+dbug: Simple.Interpreter.Ast.Expression[0]
+      Evaluated: False
+dbug: Simple.Interpreter.Ast.Expression[0]
+      Expression Evaluated: False
+```
 ## Language Syntax (Brief Overview for Expressions)
 
 * **Variables:** Identifiers (e.g., `age`, `productName`, `user`). These will be resolved from the provided context. You can access properties, fields and methods of complex object variables using dot notation (e.g., `user.Age`, `order.Name`, `user.DoSomething()`). The expression can only access variables 1 level deep (e.g. `user.FullAddress.PostalCode` is 2 level deep and will fail validation)

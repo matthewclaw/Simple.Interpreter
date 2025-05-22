@@ -1,4 +1,5 @@
-﻿using Simple.Interpreter.Ast;
+﻿using Microsoft.Extensions.Logging;
+using Simple.Interpreter.Ast;
 using Simple.Interpreter.Demo.Examples.Models;
 using System;
 using System.Collections.Generic;
@@ -32,9 +33,13 @@ namespace Simple.Interpreter.Demo.Examples
                 Age = 19,
                 City = "Johannesburg"
             };
-
+            ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+                builder.SetMinimumLevel(LogLevel.Debug);
+            });
             // Initializing the interpreter
-            ExpressionInterpreter interpreter = new ExpressionInterpreter();
+            ExpressionInterpreter interpreter = new ExpressionInterpreter(loggerFactory);
 
             // Preloads the reflection information for the variable (This is optional)
             interpreter.GlobalScope.RegisterVariableType("user", typeof(User));
