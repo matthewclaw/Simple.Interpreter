@@ -22,7 +22,7 @@
 - [ ] 🙌Cleanup (removing unnecessary files/code)
 - [ ] 😶‍🌫️CI/CD/Build steps changes
 - [ ] ❤️Tests (Adding missing or correcting existing tests)
-- [ ] ❤️Documentation only changes
+- [ ] ❤️Documentation
 - [ ] 🫠Performance (A code change that improves performance)
 
 ## Testing detail of change <!--- CONDITIONAL -->
