@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Simple.Interpreter.Ast.Nodes;
+using Simple.Interpreter.Enums;
 using Simple.Interpreter.Extensions;
 using Simple.Interpreter.Scoping;
 using System.Reflection;
@@ -448,6 +449,10 @@ namespace Simple.Interpreter.Ast
         {
             if (left.GetType() != rightList.ItemType)
             {
+                if((left.GetType() == typeof(int) && rightList.ItemType == typeof(double)))
+                {
+                    return op == BinaryOperators.In ? rightList.Values.Contains(left) : !rightList.Values.Contains(left);
+                }
                 throw new InvalidOperationException($"Left node value type '{left.GetType().FullName}' does not match the Right node value type '{rightList.ItemType}'");
             }
             return op == BinaryOperators.In ? rightList.Values.Contains(left) : !rightList.Values.Contains(left);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Simple.Interpreter.Enums;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,30 +7,6 @@ using System.Threading.Tasks;
 
 namespace Simple.Interpreter.Ast.Nodes
 {
-    /// <summary>
-    /// Defines constants for binary operators used in the interpreter.
-    /// </summary>
-    public static class BinaryOperators
-    {
-        #region Public Fields
-
-        public const string Add = "+";
-        public const string And = "and";
-        public const string Divide = "/";
-        public const string EqualTo = "==";
-        public const string GreaterThan = ">";
-        public const string GreaterThanOrEqualTo = ">=";
-        public const string In = "in";
-        public const string LessThan = "<";
-        public const string LessThanOrEqualTo = "<=";
-        public const string Minus = "-";
-        public const string Multiply = "*";
-        public const string NotEqualTo = "!=";
-        public const string NotIn = "not in";
-        public const string Or = "or";
-
-        #endregion Public Fields
-    }
 
     /// <summary>
     /// Represents a binary operation node in the abstract syntax tree.

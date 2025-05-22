@@ -21,17 +21,26 @@ namespace Simple.Interpreter.Ast
 
         #endregion Public Fields
 
+        #region Private Fields
+
+        private readonly ILoggerFactory? _loggerFactory;
+
+        #endregion Private Fields
+
         #region Public Properties
 
         public Scope GlobalScope { get; private set; }
-        private readonly ILoggerFactory? _loggerFactory;
-
         public Dictionary<string, Func<object[], object>> RegisteredFunctions { get; private set; }
+
+        #endregion Public Properties
+
+        #region Public Constructors
 
         public ExpressionInterpreter(ILoggerFactory loggerFactory) : this()
         {
             _loggerFactory = loggerFactory;
         }
+
         public ExpressionInterpreter()
         {
             GlobalScope = new Scope();
@@ -215,7 +224,38 @@ namespace Simple.Interpreter.Ast
                 default: return 0;
             }
         }
-
+        private string CheckForNaturalLanguageOperator(string op)
+        {
+            switch (op.ToLower())
+            {
+                case BinaryOperators.EqualTo_Nat:
+                case BinaryOperators.IsEqualTo_Nat:
+                case BinaryOperators.Equals_Nat:
+                case BinaryOperators.Is_Nat:
+                    return BinaryOperators.EqualTo;
+                case BinaryOperators.NotEqualTo_Nat:
+                case BinaryOperators.IsNotEqualTo_Nat:
+                    return BinaryOperators.NotEqualTo;
+                case BinaryOperators.GreaterThan_Nat:
+                case BinaryOperators.IsGreaterThan_Nat:
+                    return BinaryOperators.GreaterThan;
+                case BinaryOperators.LessThan_Nat:
+                case BinaryOperators.IsLessThan_Nat:
+                    return BinaryOperators.LessThan;
+                case BinaryOperators.GreaterThanOrEqualTo_Nat:
+                case BinaryOperators.GreaterOrEqualTo_Nat:
+                case BinaryOperators.IsGreaterThanOrEqualTo_Nat:
+                case BinaryOperators.IsGreaterOrEqualTo_Nat:
+                    return BinaryOperators.GreaterThanOrEqualTo;
+                case BinaryOperators.LessThanOrEqualTo_Nat:
+                case BinaryOperators.LessOrEqualTo_Nat:
+                case BinaryOperators.IsLessThanOrEqualTo_Nat:
+                case BinaryOperators.IsLessOrEqualTo_Nat:
+                    return BinaryOperators.LessThanOrEqualTo;
+                default:
+                    return op;
+            }
+        }
         /// <summary>
         /// Parses a list of tokens into an expression tree, handling operator precedence and different token contexts.
         /// It recursively builds the tree based on the order of operations and token types.
@@ -249,7 +289,7 @@ namespace Simple.Interpreter.Ast
                     return left;
                 }
 
-                string op = tokens[position];
+                string op = CheckForNaturalLanguageOperator(tokens[position]);
                 int opPrecedence = GetPrecedence(op);
                 if (opPrecedence < precedence)
                 {

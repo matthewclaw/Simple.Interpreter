@@ -14,6 +14,8 @@ namespace Simple.Interpreter.Tests.Ast.Expression.TestCases
         public IEnumerator<object[]> GetEnumerator()
         {
             yield return new ExpressionValidationTest(expression: "2+1 if(5==5) else 4");
+            yield return new ExpressionValidationTest(expression: "2+1 if(5 equal to 5) else 4");
+            yield return new ExpressionValidationTest(expression: "2+1 if(5 is 5) else 4");
             yield return new ExpressionValidationTest("2+1 if(5+5) else 4", new List<string> { "If condition must return a boolean value" });
             yield return new ExpressionValidationTest("2+1 if(context==true) else 4", new Dictionary<string, Type>() { { "context", typeof(bool) } }, true);
             yield return new ExpressionValidationTest("2+1 if(context==false) else 4", new Dictionary<string, Type>() { { "context", typeof(bool) } }, false);
