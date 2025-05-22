@@ -34,6 +34,7 @@
 * **Extensible Function Support:** Designed to allow developers to easily register custom functions that can be called within the expressions.
 * **Lightweight and Embeddable:** The library has minimal dependencies and can be easily integrated into any .NET application.
 * **Complex Object Support:** As showcased in the unit tests, the interpreter can access properties, fields and methods of complex objects passed within the evaluation context.
+* **Extension Methods:** Provides extension methods for `IEnumerable` to allow for easy filtering and projection of collections using expressions.
 
 ## Getting Started
 
@@ -89,9 +90,9 @@ var expression = interpreter.GetExpression(expressionString);
 // Set its scope
 expression.SetScope(context);
 // Evaluate the expression
-object result = expression.Evaluate();
+bool isAdultInJohannesburg = expression.Evaluate<bool>();
 
-if (result is bool isAdultInJohannesburg && isAdultInJohannesburg)
+if (isAdultInJohannesburg)
 {
     Console.WriteLine($"{user.Name} meets the criteria.");
 }
@@ -225,7 +226,7 @@ Expression expression = interpreter.GetExpression(expressionString);
 // Set its scope
 expression.SetScope(scope);
 
-var result = expression.Evaluate(); //Returns true
+bool isOldEnough = expression.Evaluate<bool>(); //Returns true
 if(result is bool isOldEnough && isOldEnough)
 {
     Console.WriteLine($"{frank} is Older than {ageToTest}");
@@ -307,7 +308,13 @@ dbug: Simple.Interpreter.Ast.Expression[0]
 * **Logical Operators:** `and` (logical AND), `or` (logical OR).
 * **Array Operators:** `in` (array contains), `not in` (array does not contain).
 * **Parentheses:** Used to group expressions and control operator precedence (e.g., `(a + b) * c`).
-* **Function Calls:** Registered custom functions can be called using their name followed by arguments in parentheses (e.g., `startsWith(name, 'Prefix')`, `isOlderThan(currentUser, 30)`). By default, the `ExpressionInterpreter` includes a set of built-in functions including `startsWith`, `endsWith`, `min` and `max`.
+* **Function Calls:** Registered custom functions can be called using their name followed by arguments in parentheses (e.g., `startsWith(name, 'Prefix')`, `isOlderThan(currentUser, 30)`). By default, the `ExpressionInterpreter` includes a set of built-in functions including:
+    - `startsWith` => Equivalent to `string.StartsWith`
+    - `endsWith` => Equivalent to `string.EndsWith`
+    - `min` => Equivalent to `Math.Min` (if numbers are passed as arguments) or returns the shortest `string` if strings are passed as arguments.
+    - `max` => Equivalent to `Math.Max` (if numbers are passed as arguments) or returns the longest `string` if strings are passed as arguments.
+    - `string` => Equivalent to `Object.ToString()`.
+    - `length` => Equivalent to `string.Length`.
 * **Ternary Expressions:** Python-style ternary support (e.g., `'Over 21' if (user.Age > 21) else 'Under 21'`).
 
 ## Contributing

@@ -84,7 +84,7 @@ namespace Simple.Interpreter.Tests.Ast.Expression
             var actualFourParamFuncResult = expression.Evaluate();
 
             // Assert
-            Assert.Equal(9, interpreter.RegisteredFunctions.Count); // Includes the "built-in" functions
+            Assert.Equal(11, interpreter.RegisteredFunctions.Count); // Includes the "built-in" functions
             Assert.Equal(expectedNoParamFuncResult, actualNoParamFuncResult);
             Assert.Equal(expectedOneParamFuncResult, actualOneParamFuncResult);
             Assert.Equal(expectedTwoParamFuncResult, actualTwoParamFuncResult);

@@ -61,7 +61,7 @@ namespace Simple.Interpreter
         /// <returns>True, if the first string starts with the second</returns>
         public static bool StartsWith(string stringToTest, string value)
         {
-           return stringToTest!.StartsWith(value!);
+            return stringToTest!.StartsWith(value!);
         }
 
         /// <summary>
@@ -70,7 +70,21 @@ namespace Simple.Interpreter
         /// <returns>True, if the first string ends with the second</returns>
         public static bool EndsWith(string stringToTest, string value)
         {
-           return stringToTest!.EndsWith(value!);
+            return stringToTest!.EndsWith(value!);
         }
+
+        /// <summary>
+        /// Calls .ToString()
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static string String(object value) => value?.ToString() ?? string.Empty;
+
+        /// <summary>
+        /// Equates String.Length
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static int Length(string value) => value?.Length ?? 0;
     }
 }

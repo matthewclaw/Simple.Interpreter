@@ -14,7 +14,7 @@ namespace Simple.Interpreter.Ast.Nodes
 
         protected override string CSharpConstructorType() => "double";
 
-        protected override string CSharpItemFormat(double item) => $"{item}f";
+        protected override string CSharpItemFormat(double item) => $"{item}f".Replace(',','.');
 
         #endregion Protected Methods
     }

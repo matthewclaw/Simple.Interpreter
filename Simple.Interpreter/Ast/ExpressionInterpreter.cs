@@ -49,6 +49,8 @@ namespace Simple.Interpreter.Ast
             RegisterFunction<object, object, object>("max", BasicExpressionFunctions.Max);
             RegisterFunction<string, string, bool>("startsWith", BasicExpressionFunctions.StartsWith);
             RegisterFunction<string, string, bool>("endsWith", BasicExpressionFunctions.EndsWith);
+            RegisterFunction<object, string>("string", BasicExpressionFunctions.String);
+            RegisterFunction<string, int>("length", BasicExpressionFunctions.Length);
         }
 
         #endregion Public Constructors
@@ -396,7 +398,7 @@ namespace Simple.Interpreter.Ast
                     }
                     list.Values.Add(intVal);
                 }
-                else if (double.TryParse(tokens[position], out var doubleVal))
+                else if (double.TryParse(tokens[position], out var doubleVal) || double.TryParse(tokens[position].Replace('.', ','), out doubleVal))
                 {
                     if (list?.Equals(null) ?? true)
                     {
@@ -479,7 +481,7 @@ namespace Simple.Interpreter.Ast
                 {
                     return new IntLiteralNode { Value = modifier * intNumber };
                 }
-                else if (double.TryParse(currentToken, out double number))
+                else if (double.TryParse(currentToken, out double number) || double.TryParse(currentToken.Replace('.', ','), out number))
                 {
                     return new DoubleLiteralNode { Value = modifier * number };
                 }
