@@ -4,7 +4,7 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Version>8.2.0</Version>
+    <Version>8.2.1</Version>
     <Authors>matthewclaw</Authors>
     <Title>Simple.Interpreter</Title>
     <Description>A simple interpreter for evaluating custom expressions and rules; Perfect for when clients want to define business rules or aggregation logic on the fly.</Description>
