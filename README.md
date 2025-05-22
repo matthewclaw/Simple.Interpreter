@@ -34,6 +34,7 @@
 * **Extensible Function Support:** Designed to allow developers to easily register custom functions that can be called within the expressions.
 * **Lightweight and Embeddable:** The library has minimal dependencies and can be easily integrated into any .NET application.
 * **Complex Object Support:** As showcased in the unit tests, the interpreter can access properties, fields and methods of complex objects passed within the evaluation context.
+* **Extension Methods:** Provides extension methods for `IEnumerable` to allow for easy filtering and projection of collections using expressions.
 
 ## Getting Started
 
@@ -89,9 +90,9 @@ var expression = interpreter.GetExpression(expressionString);
 // Set its scope
 expression.SetScope(context);
 // Evaluate the expression
-object result = expression.Evaluate();
+bool isAdultInJohannesburg = expression.Evaluate<bool>();
 
-if (result is bool isAdultInJohannesburg && isAdultInJohannesburg)
+if (isAdultInJohannesburg)
 {
     Console.WriteLine($"{user.Name} meets the criteria.");
 }
@@ -225,7 +226,7 @@ Expression expression = interpreter.GetExpression(expressionString);
 // Set its scope
 expression.SetScope(scope);
 
-var result = expression.Evaluate(); //Returns true
+bool isOldEnough = expression.Evaluate<bool>(); //Returns true
 if(result is bool isOldEnough && isOldEnough)
 {
     Console.WriteLine($"{frank} is Older than {ageToTest}");
