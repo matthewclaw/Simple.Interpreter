@@ -28,6 +28,7 @@ namespace Simple.Interpreter.Enums
         public const string NotIn = "not in";
         public const string Or = "or";
         public const string EqualTo_Nat = "equal to";
+        public const string Is_Nat = "is";
         public const string Equals_Nat = "equals";
         public const string IsEqualTo_Nat = "is equal to";
         public const string NotEqualTo_Nat = "not equal to";

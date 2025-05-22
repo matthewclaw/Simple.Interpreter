@@ -231,6 +231,7 @@ namespace Simple.Interpreter.Ast
                 case BinaryOperators.EqualTo_Nat:
                 case BinaryOperators.IsEqualTo_Nat:
                 case BinaryOperators.Equals_Nat:
+                case BinaryOperators.Is_Nat:
                     return BinaryOperators.EqualTo;
                 case BinaryOperators.NotEqualTo_Nat:
                 case BinaryOperators.IsNotEqualTo_Nat:

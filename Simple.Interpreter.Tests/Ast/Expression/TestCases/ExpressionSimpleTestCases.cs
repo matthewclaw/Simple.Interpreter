@@ -32,6 +32,7 @@ namespace Simple.Interpreter.Tests.Ast.Expression.TestCases
             yield return new ExpressionSimpleTest(expression: "'foo' is equal to 'foo'", expectedValue: true);
             yield return new ExpressionSimpleTest(expression: "4==5", expectedValue: false);
             yield return new ExpressionSimpleTest(expression: "4 equals 5", expectedValue: false);
+            yield return new ExpressionSimpleTest(expression: "4 is 5", expectedValue: false);
             yield return new ExpressionSimpleTest(expression: "4 equal to 5", expectedValue: false);
             yield return new ExpressionSimpleTest(expression: "6!=4", expectedValue: true);
             yield return new ExpressionSimpleTest(expression: "6 not equal to 4", expectedValue: true);
