@@ -49,6 +49,8 @@ namespace Simple.Interpreter.Ast
             RegisterFunction<object, object, object>("max", BasicExpressionFunctions.Max);
             RegisterFunction<string, string, bool>("startsWith", BasicExpressionFunctions.StartsWith);
             RegisterFunction<string, string, bool>("endsWith", BasicExpressionFunctions.EndsWith);
+            RegisterFunction<object, string>("string", BasicExpressionFunctions.String);
+            RegisterFunction<string, int>("length", BasicExpressionFunctions.Length);
         }
 
         #endregion Public Constructors

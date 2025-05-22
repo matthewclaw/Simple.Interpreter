@@ -308,7 +308,13 @@ dbug: Simple.Interpreter.Ast.Expression[0]
 * **Logical Operators:** `and` (logical AND), `or` (logical OR).
 * **Array Operators:** `in` (array contains), `not in` (array does not contain).
 * **Parentheses:** Used to group expressions and control operator precedence (e.g., `(a + b) * c`).
-* **Function Calls:** Registered custom functions can be called using their name followed by arguments in parentheses (e.g., `startsWith(name, 'Prefix')`, `isOlderThan(currentUser, 30)`). By default, the `ExpressionInterpreter` includes a set of built-in functions including `startsWith`, `endsWith`, `min` and `max`.
+* **Function Calls:** Registered custom functions can be called using their name followed by arguments in parentheses (e.g., `startsWith(name, 'Prefix')`, `isOlderThan(currentUser, 30)`). By default, the `ExpressionInterpreter` includes a set of built-in functions including:
+    - `startsWith` => Equivalent to `string.StartsWith`
+    - `endsWith` => Equivalent to `string.EndsWith`
+    - `min` => Equivalent to `Math.Min` (if numbers are passed as arguments) or returns the shortest `string` if strings are passed as arguments.
+    - `max` => Equivalent to `Math.Max` (if numbers are passed as arguments) or returns the longest `string` if strings are passed as arguments.
+    - `string` => Equivalent to `Object.ToString()`.
+    - `length` => Equivalent to `string.Length`.
 * **Ternary Expressions:** Python-style ternary support (e.g., `'Over 21' if (user.Age > 21) else 'Under 21'`).
 
 ## Contributing
