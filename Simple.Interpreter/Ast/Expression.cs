@@ -75,6 +75,22 @@ namespace Simple.Interpreter.Ast
         }
 
         /// <summary>
+        /// Evaluates the expression and attempts to cast the result to the specified type.
+        /// </summary>
+        /// <typeparam name="T">The type to which the result of the expression should be cast.</typeparam>
+        /// <returns>The result of evaluating the expression, cast to type T.</returns>
+        /// <exception cref="InvalidOperationException">Thrown if the expression evaluates to a type that cannot be cast to T.</exception>
+        public T Evaluate<T>()
+        {
+            var raw = Evaluate();
+            if (raw is T result)
+            {
+                return result;
+            }
+            throw new InvalidOperationException($"Expression: '{Tree}' Evaluates to type {raw.GetType().Name} and not {typeof(T).Name}");
+        }
+
+        /// <summary>
         /// Retrieves a list of child nodes of the expression tree of a specific type.
         /// </summary>
         /// <typeparam name="T">The type of ExpressionNode to filter for.</typeparam>
@@ -449,7 +465,7 @@ namespace Simple.Interpreter.Ast
         {
             if (left.GetType() != rightList.ItemType)
             {
-                if((left.GetType() == typeof(int) && rightList.ItemType == typeof(double)))
+                if ((left.GetType() == typeof(int) && rightList.ItemType == typeof(double)))
                 {
                     return op == BinaryOperators.In ? rightList.Values.Contains(left) : !rightList.Values.Contains(left);
                 }
