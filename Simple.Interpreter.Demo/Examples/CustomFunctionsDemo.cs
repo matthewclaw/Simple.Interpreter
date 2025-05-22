@@ -1,4 +1,5 @@
-﻿using Simple.Interpreter.Ast;
+﻿using Microsoft.Extensions.Logging;
+using Simple.Interpreter.Ast;
 using Simple.Interpreter.Demo.Examples.Models;
 using System;
 using System.Collections.Generic;
@@ -18,9 +19,13 @@ namespace Simple.Interpreter.Demo.Examples
 
         public static void Run()
         {
-            ExpressionInterpreter interpreter = new ExpressionInterpreter();
+            ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+                builder.SetMinimumLevel(LogLevel.Debug);
+            });
+            ExpressionInterpreter interpreter = new ExpressionInterpreter(loggerFactory);
             //Register custom Function
-            // PS: Due to limitations, custom functions must accept either an `object` or an `object[]` and return an `object`. Sorry :/
             interpreter.RegisterFunction("isUserOlderThan", IsUserOlderThan);
 
             var frank = new User

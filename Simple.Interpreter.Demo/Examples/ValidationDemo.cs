@@ -1,4 +1,5 @@
-﻿using Simple.Interpreter.Ast;
+﻿using Microsoft.Extensions.Logging;
+using Simple.Interpreter.Ast;
 using Simple.Interpreter.Demo.Examples.Models;
 using System;
 using System.Collections.Generic;
@@ -40,7 +41,14 @@ namespace Simple.Interpreter.Demo.Examples
                 { "foo", foo },
                 { "bar", bar },
             };
-            ExpressionInterpreter interpreter = new ExpressionInterpreter();
+            ILoggerFactory loggerFactory = LoggerFactory.Create(builder =>
+            {
+                builder.AddConsole();
+                builder.SetMinimumLevel(LogLevel.Debug);
+            });
+
+            // Supplying an `ILoggerFactory` is optional
+            ExpressionInterpreter interpreter = new ExpressionInterpreter(loggerFactory);
             interpreter.SetGlobalScope(demoScope);
             Console.WriteLine("Try input an expression and hit enter, lets see if it validates. You have the following scope at your disposal:");
             Console.WriteLine(interpreter.GlobalScope);
