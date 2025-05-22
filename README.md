@@ -15,7 +15,19 @@
 * **Simple Expression Syntax:** The interpreted language offers a minimal and intuitive syntax, easy for non-technical users to grasp.
 * **Validation:** The interpreter validates the expression syntax and ensures that it is well-formed and can be evaluated.
 * **Arithmetic Operations:** Includes standard arithmetic operations (+, -, \*, /).
-* **Comparison Operators:** Supports a full suite of comparison operators (==, !=, >, <, >=, <=).
+* **Comparison Operators:** Supports a full suite of comparison operators (`==`, `!=`, `>`, `<`, `>=`, `<=`). Version `8.2.0` added support for more natural language comparison operators including:
+    - `equal to`
+    - `is equal to`
+    - `not equal to`
+    - `is not equal to`
+    - `greater than`
+    - `is greater than`
+    - `less than`
+    - `is less than`
+    - `greater than or equal to`
+    - `is greater than or equal to`
+    - `less than or equal to`
+    - `is less than or equal to`
 * **Logical Operators:** Implements logical AND (`and`) and OR (`or`) operations for building complex conditions.
 * **Array Operators:** `in` (array contains), `not in` (array does not contain) to check against arrays.
 * **Variable Resolution:** Allows expressions to reference external variables provided at runtime, including **complex objects and their properties**.
