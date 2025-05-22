@@ -16,8 +16,7 @@ namespace Simple.Interpreter.Ast
     {
         #region Public Fields
 
-        //public const string TokenPattern = @"((not\s)?in\s)|==|!=|>=|<=|>|<|and|or|(""[^""]*""|'[^']*'|\d+\.?\d*|\w+(\.\w+)*|\[|\]|[\,\+\-\*\/\(\)])";
-       public const string TokenPattern = TokenRegex.COMPILED;
+        public const string TokenPattern = TokenRegex.COMPILED;
 
         #endregion Public Fields
 
@@ -35,8 +34,8 @@ namespace Simple.Interpreter.Ast
         {
             GlobalScope = new Scope();
             RegisteredFunctions = new Dictionary<string, Func<object[], object>>();
-            RegisterFunction<object,object,object>("min", BasicExpressionFunctions.Min);
-            RegisterFunction<object,object,object>("max", BasicExpressionFunctions.Max);
+            RegisterFunction<object, object, object>("min", BasicExpressionFunctions.Min);
+            RegisterFunction<object, object, object>("max", BasicExpressionFunctions.Max);
             RegisterFunction<string, string, bool>("startsWith", BasicExpressionFunctions.StartsWith);
             RegisterFunction<string, string, bool>("endsWith", BasicExpressionFunctions.EndsWith);
         }
