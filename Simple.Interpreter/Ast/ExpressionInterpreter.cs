@@ -15,8 +15,13 @@ namespace Simple.Interpreter.Ast
 {
     public class ExpressionInterpreter : IExpressionInterpreter
     {
+        #region Public Fields
 
         public const string TokenPattern = @"((not\s)?in\s)|==|!=|>=|<=|>|<|and|or|(""[^""]*""|'[^']*'|\d+\.?\d*|\w+(\.\w+)*|\[|\]|[\,\+\-\*\/\(\)])";
+
+        #endregion Public Fields
+
+        #region Public Properties
 
         public Scope GlobalScope { get; private set; }
         private readonly ILoggerFactory? _loggerFactory;
@@ -30,14 +35,16 @@ namespace Simple.Interpreter.Ast
         public ExpressionInterpreter()
         {
             GlobalScope = new Scope();
-            RegisteredFunctions = new Dictionary<string, Func<object[], object>>()
-            {
-                {"startsWith", BasicExpressionFunctions.StartsWith },
-                {"endsWith", BasicExpressionFunctions.EndsWith },
-                {"min", BasicExpressionFunctions.Min },
-                {"max", BasicExpressionFunctions.Max },
-            };
+            RegisteredFunctions = new Dictionary<string, Func<object[], object>>();
+            RegisterFunction<object,object,object>("min", BasicExpressionFunctions.Min);
+            RegisterFunction<object,object,object>("max", BasicExpressionFunctions.Max);
+            RegisterFunction<string, string, bool>("startsWith", BasicExpressionFunctions.StartsWith);
+            RegisterFunction<string, string, bool>("endsWith", BasicExpressionFunctions.EndsWith);
         }
+
+        #endregion Public Constructors
+
+        #region Public Methods
 
         public Expression GetExpression(string expression)
         {
@@ -63,6 +70,47 @@ namespace Simple.Interpreter.Ast
             }
         }
 
+        public void RegisterFunction<TResult>(string functionName, Func<TResult> implementation)
+        {
+            RegisteredFunctions[functionName] = array => implementation();
+        }
+
+        public void RegisterFunction<TParam, TResult>(string functionName, Func<TParam, TResult> implementation)
+        {
+            RegisteredFunctions[functionName] = array =>
+            {
+                CheckArgCount(1, array);
+                return implementation((TParam)array[0]);
+            };
+        }
+
+        public void RegisterFunction<TParam, TParam2, TResult>(string functionName, Func<TParam, TParam2, TResult> implementation)
+        {
+            RegisteredFunctions[functionName] = array =>
+            {
+                CheckArgCount(2, array);
+                return implementation((TParam)array[0], (TParam2)array[1]);
+            };
+        }
+
+        public void RegisterFunction<TParam, TParam2, TParam3, TResult>(string functionName, Func<TParam, TParam2, TParam3, TResult> implementation)
+        {
+            RegisteredFunctions[functionName] = array =>
+            {
+                CheckArgCount(3, array);
+                return implementation((TParam)array[0], (TParam2)array[1], (TParam3)array[2]);
+            };
+        }
+
+        public void RegisterFunction<TParam, TParam2, TParam3, TParam4, TResult>(string functionName, Func<TParam, TParam2, TParam3, TParam4, TResult> implementation)
+        {
+            RegisteredFunctions[functionName] = array =>
+            {
+                CheckArgCount(4, array);
+                return implementation((TParam)array[0], (TParam2)array[1], (TParam3)array[2], (TParam4)array[3]);
+            };
+        }
+
         public void SetGlobalScope(Dictionary<string, object> scope)
         {
             GlobalScope.SetVariables(scope);
@@ -72,6 +120,7 @@ namespace Simple.Interpreter.Ast
         {
             return Validate(expression, out _, out errors);
         }
+
         public bool Validate(string expression, out Expression? validExpression, out List<Exception> errors)
         {
             errors = new List<Exception>();
@@ -93,7 +142,7 @@ namespace Simple.Interpreter.Ast
                 validExpression = parsed;
                 return true;
             }
-            if(!ValidateTernaryNodes(ternaryNodes, out var ternaryErrors))
+            if (!ValidateTernaryNodes(ternaryNodes, out var ternaryErrors))
             {
                 errors.AddRange(ternaryErrors);
                 validExpression = null;
@@ -128,40 +177,17 @@ namespace Simple.Interpreter.Ast
             }
             return errors.Count == 0;
         }
-        private bool ValidateTernaryNodes(List<TernaryNode> nodes, Dictionary<string, Type> validVariables, out List<Exception> errors)
+
+        #endregion Public Methods
+
+        #region Private Methods
+
+        private void CheckArgCount(int required, object[] args)
         {
-            errors = new List<Exception>();
-            foreach (var node in nodes)
+            if (args.Length != required)
             {
-                try
-                {
-                    var expression = new Expression(node, this);
-                    expression.RegisterScopedVariableTypes(validVariables);
-                    _ = expression.Evaluate();
-                }
-                catch (Exception e)
-                {
-                    errors.Add(e);
-                }
+                throw new ArgumentException($"Expected {required} arguments/parameters");
             }
-            return errors.Count == 0;
-        }
-        private bool ValidateTernaryNodes(List<TernaryNode> nodes, out List<Exception> errors)
-        {
-            errors = new List<Exception>();
-            foreach (var node in nodes)
-            {
-                try
-                {
-                    var expression = new Expression(node, this);
-                    _ = expression.Evaluate();
-                }
-                catch (Exception e)
-                {
-                    errors.Add(e);
-                }
-            }
-            return errors.Count == 0;
         }
 
         /// <summary>
@@ -255,23 +281,6 @@ namespace Simple.Interpreter.Ast
             }
 
             return left;
-        }
-
-        private TernaryNode ParseTunaryNode(ExpressionNode truthyNode, List<string> tokens, ref int position)
-        {
-            var elseIndex = tokens.IndexOf("else");
-            if(elseIndex == -1)
-            {
-                throw new ArgumentException("No 'else' found in expression");
-            }
-            var conditionExpressionLength = elseIndex - position - 1;
-            var conditionExpressionRange = tokens.GetRange(position + 1, conditionExpressionLength);
-            var conditionPosition = 0;
-            var conditionNode = ParseExpression(conditionExpressionRange, ref conditionPosition);
-            position = elseIndex + 1;
-            var falsyNode = ParseExpression(tokens, ref position);
-            return new TernaryNode(conditionNode, truthyNode, falsyNode);
-
         }
 
         /// <summary>
@@ -452,6 +461,22 @@ namespace Simple.Interpreter.Ast
             return new IdentifierNode { Name = currentToken };
         }
 
+        private TernaryNode ParseTunaryNode(ExpressionNode truthyNode, List<string> tokens, ref int position)
+        {
+            var elseIndex = tokens.IndexOf("else");
+            if (elseIndex == -1)
+            {
+                throw new ArgumentException("No 'else' found in expression");
+            }
+            var conditionExpressionLength = elseIndex - position - 1;
+            var conditionExpressionRange = tokens.GetRange(position + 1, conditionExpressionLength);
+            var conditionPosition = 0;
+            var conditionNode = ParseExpression(conditionExpressionRange, ref conditionPosition);
+            position = elseIndex + 1;
+            var falsyNode = ParseExpression(tokens, ref position);
+            return new TernaryNode(conditionNode, truthyNode, falsyNode);
+        }
+
         /// <summary>
         /// Sanitizes the input expression string by replacing non-standard quotation marks with standard ones.
         /// This ensures that the expression parser can correctly interpret string literals enclosed in these quotation marks.
@@ -507,15 +532,43 @@ namespace Simple.Interpreter.Ast
             }
         }
 
-        public void RegisterFunction<T>(string functionName, Func<object, T> implementation)
+        private bool ValidateTernaryNodes(List<TernaryNode> nodes, Dictionary<string, Type> validVariables, out List<Exception> errors)
         {
-            RegisteredFunctions.Add(functionName, array => implementation(array[0]));
+            errors = new List<Exception>();
+            foreach (var node in nodes)
+            {
+                try
+                {
+                    var expression = new Expression(node, this);
+                    expression.RegisterScopedVariableTypes(validVariables);
+                    _ = expression.Evaluate();
+                }
+                catch (Exception e)
+                {
+                    errors.Add(e);
+                }
+            }
+            return errors.Count == 0;
         }
 
-        public void RegisterFunction<T>(string functionName, Func<object[], T> implementation)
+        private bool ValidateTernaryNodes(List<TernaryNode> nodes, out List<Exception> errors)
         {
-            RegisteredFunctions.Add(functionName, array => implementation(array));
+            errors = new List<Exception>();
+            foreach (var node in nodes)
+            {
+                try
+                {
+                    var expression = new Expression(node, this);
+                    _ = expression.Evaluate();
+                }
+                catch (Exception e)
+                {
+                    errors.Add(e);
+                }
+            }
+            return errors.Count == 0;
         }
 
+        #endregion Private Methods
     }
 }

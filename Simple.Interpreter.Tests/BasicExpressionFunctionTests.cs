@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Simple.Interpreter.Tests
 {
+    [ExcludeFromCodeCoverage]
     public class BasicExpressionFunctionTests
     {
         #region Public Methods
@@ -18,7 +20,7 @@ namespace Simple.Interpreter.Tests
             var testFor = "r";
 
             // Act
-            var result = (bool)BasicExpressionFunctions.EndsWith(new object[] { value, testFor });
+            var result = BasicExpressionFunctions.EndsWith(value, testFor);
 
             // Assert
             Assert.True(result);
@@ -32,29 +34,10 @@ namespace Simple.Interpreter.Tests
             var value2 = 68.999;
 
             // Act
-            var result = BasicExpressionFunctions.Max(new object[] { value1, value2 });
+            var result = BasicExpressionFunctions.Max(value1, value2);
 
             // Assert
             Assert.Equal(value2, result);
-        }
-
-        [Fact]
-        public void Max_WithIncorrectParamCount_ThrowsArgumentException()
-        {
-            // Arrange
-            bool wasExceptionThrown = false;
-
-            // Act
-            try
-            {
-                _ = BasicExpressionFunctions.Max(new object[] { 1, 2, 3, 4 });
-            }
-            catch
-            {
-                wasExceptionThrown = true;
-            }
-            // Assert
-            Assert.True(wasExceptionThrown);
         }
 
         [Fact]
@@ -65,7 +48,7 @@ namespace Simple.Interpreter.Tests
             var value2 = 69;
 
             // Act
-            var result = BasicExpressionFunctions.Max(new object[] { value1, value2 });
+            var result = BasicExpressionFunctions.Max(value1, value2);
 
             // Assert
             Assert.Equal(value2, result);
@@ -82,7 +65,7 @@ namespace Simple.Interpreter.Tests
             // Act
             try
             {
-                _ = BasicExpressionFunctions.Max(new object[] { value1, value2 });
+                _ = BasicExpressionFunctions.Max(value1, value2);
             }
             catch
             {
@@ -100,7 +83,7 @@ namespace Simple.Interpreter.Tests
             var value2 = "foo";
 
             // Act
-            var result = BasicExpressionFunctions.Max(new object[] { value1, value2 });
+            var result = BasicExpressionFunctions.Max(value1, value2);
 
             // Assert
             Assert.Equal(value2, result);
@@ -114,7 +97,7 @@ namespace Simple.Interpreter.Tests
             var value2 = "foo";
 
             // Act
-            var result = BasicExpressionFunctions.Max(new object[] { value1, value2 });
+            var result = BasicExpressionFunctions.Max(value1, value2);
 
             // Assert
             Assert.Equal(value1, result);
@@ -128,29 +111,10 @@ namespace Simple.Interpreter.Tests
             var value2 = 68.999;
 
             // Act
-            var result = BasicExpressionFunctions.Min(new object[] { value1, value2 });
+            var result = BasicExpressionFunctions.Min(value1, value2);
 
             // Assert
             Assert.Equal(value1, result);
-        }
-
-        [Fact]
-        public void Min_WithIncorrectParamCount_ThrowsArgumentException()
-        {
-            // Arrange
-            bool wasExceptionThrown = false;
-
-            // Act
-            try
-            {
-                _ = BasicExpressionFunctions.Min(new object[] { 1, 2, 3 });
-            }
-            catch
-            {
-                wasExceptionThrown = true;
-            }
-            // Assert
-            Assert.True(wasExceptionThrown);
         }
 
         [Fact]
@@ -161,7 +125,7 @@ namespace Simple.Interpreter.Tests
             var value2 = 69;
 
             // Act
-            var result = BasicExpressionFunctions.Min(new object[] { value1, value2 });
+            var result = BasicExpressionFunctions.Min(value1, value2);
 
             // Assert
             Assert.Equal(value1, result);
@@ -178,7 +142,7 @@ namespace Simple.Interpreter.Tests
             // Act
             try
             {
-                _ = BasicExpressionFunctions.Min(new object[] { value1, value2 });
+                _ = BasicExpressionFunctions.Min(value1, value2);
             }
             catch
             {
@@ -196,7 +160,7 @@ namespace Simple.Interpreter.Tests
             var value2 = "foo";
 
             // Act
-            var result = BasicExpressionFunctions.Min(new object[] { value1, value2 });
+            var result = BasicExpressionFunctions.Min(value1, value2);
 
             // Assert
             Assert.Equal(value2, result);
@@ -210,7 +174,7 @@ namespace Simple.Interpreter.Tests
             var value2 = "foo";
 
             // Act
-            var result = BasicExpressionFunctions.Min(new object[] { value1, value2 });
+            var result = BasicExpressionFunctions.Min(value1, value2);
 
             // Assert
             Assert.Equal(value2, result);
@@ -224,29 +188,10 @@ namespace Simple.Interpreter.Tests
             var testFor = "f";
 
             // Act
-            var result = (bool)BasicExpressionFunctions.StartsWith(new object[] { value, testFor });
+            var result = BasicExpressionFunctions.StartsWith(value, testFor);
 
             // Assert
             Assert.True(result);
-        }
-
-        [Fact]
-        public void StartsWith_WithIncorrectParamCount_ThrowsArgumentException()
-        {
-            // Arrange
-            bool wasExceptionThrown = false;
-
-            // Act
-            try
-            {
-                _ = BasicExpressionFunctions.StartsWith(new object[] { "foo", "b", "x" });
-            }
-            catch
-            {
-                wasExceptionThrown = true;
-            }
-            // Assert
-            Assert.True(wasExceptionThrown);
         }
 
         #endregion Public Methods

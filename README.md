@@ -177,21 +177,15 @@ Console.WriteLine($"{result}"); //Outputs: Hi there Frank!, I'm Bob
 
 Custom functions can be defined and used by `Expressions` created with the `ExpressionInterpreter`.
 
-*PS: Unfortunately, due to limitations, custom functions must accept either an `object` or an `object[]` and return an `object`.*
+*Custom functions can accept up to 4 arguments.*
 
 ```csharp
 using Simple.Interpreter;
 using System;
 using System.Collections.Generic;
 
-private static object IsUserOlderThan(object[] args)
+private static bool IsUserOlderThan(User user, int age)
 {
-    if (args.Length != 2)
-    {
-        throw new ArgumentException($"{nameof(IsUserOlderThan)} expects 2 arguments");
-    }
-    User? user = args[0] as User;
-    int? age = args[1] as int?;
     bool result = user?.Age > age;
     return result;
 }
