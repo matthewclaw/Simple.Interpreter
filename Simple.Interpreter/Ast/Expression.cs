@@ -1,5 +1,6 @@
 ﻿using Microsoft.Extensions.Logging;
 using Simple.Interpreter.Ast.Nodes;
+using Simple.Interpreter.Enums;
 using Simple.Interpreter.Extensions;
 using Simple.Interpreter.Scoping;
 using System.Reflection;
