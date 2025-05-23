@@ -20,7 +20,7 @@ namespace Simple.Interpreter.Ast.Nodes
     {
         #region Public Methods
 
-        public override string GetCSharp() => $"{Value}f";
+        public override string GetCSharp() => $"{Value}f".Replace(',', '.');
 
         #endregion Public Methods
     }

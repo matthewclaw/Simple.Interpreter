@@ -15,13 +15,26 @@
 * **Simple Expression Syntax:** The interpreted language offers a minimal and intuitive syntax, easy for non-technical users to grasp.
 * **Validation:** The interpreter validates the expression syntax and ensures that it is well-formed and can be evaluated.
 * **Arithmetic Operations:** Includes standard arithmetic operations (+, -, \*, /).
-* **Comparison Operators:** Supports a full suite of comparison operators (==, !=, >, <, >=, <=).
+* **Comparison Operators:** Supports a full suite of comparison operators (`==`, `!=`, `>`, `<`, `>=`, `<=`). Version `8.2.0` added support for more natural language comparison operators including:
+    - `equal to`
+    - `is equal to`
+    - `not equal to`
+    - `is not equal to`
+    - `greater than`
+    - `is greater than`
+    - `less than`
+    - `is less than`
+    - `greater than or equal to`
+    - `is greater than or equal to`
+    - `less than or equal to`
+    - `is less than or equal to`
 * **Logical Operators:** Implements logical AND (`and`) and OR (`or`) operations for building complex conditions.
 * **Array Operators:** `in` (array contains), `not in` (array does not contain) to check against arrays.
 * **Variable Resolution:** Allows expressions to reference external variables provided at runtime, including **complex objects and their properties**.
 * **Extensible Function Support:** Designed to allow developers to easily register custom functions that can be called within the expressions.
 * **Lightweight and Embeddable:** The library has minimal dependencies and can be easily integrated into any .NET application.
 * **Complex Object Support:** As showcased in the unit tests, the interpreter can access properties, fields and methods of complex objects passed within the evaluation context.
+* **Extension Methods:** Provides extension methods for `IEnumerable` to allow for easy filtering and projection of collections using expressions.
 
 ## Getting Started
 
@@ -77,9 +90,9 @@ var expression = interpreter.GetExpression(expressionString);
 // Set its scope
 expression.SetScope(context);
 // Evaluate the expression
-object result = expression.Evaluate();
+bool isAdultInJohannesburg = expression.Evaluate<bool>();
 
-if (result is bool isAdultInJohannesburg && isAdultInJohannesburg)
+if (isAdultInJohannesburg)
 {
     Console.WriteLine($"{user.Name} meets the criteria.");
 }
@@ -213,7 +226,7 @@ Expression expression = interpreter.GetExpression(expressionString);
 // Set its scope
 expression.SetScope(scope);
 
-var result = expression.Evaluate(); //Returns true
+bool isOldEnough = expression.Evaluate<bool>(); //Returns true
 if(result is bool isOldEnough && isOldEnough)
 {
     Console.WriteLine($"{frank} is Older than {ageToTest}");
@@ -295,7 +308,13 @@ dbug: Simple.Interpreter.Ast.Expression[0]
 * **Logical Operators:** `and` (logical AND), `or` (logical OR).
 * **Array Operators:** `in` (array contains), `not in` (array does not contain).
 * **Parentheses:** Used to group expressions and control operator precedence (e.g., `(a + b) * c`).
-* **Function Calls:** Registered custom functions can be called using their name followed by arguments in parentheses (e.g., `startsWith(name, 'Prefix')`, `isOlderThan(currentUser, 30)`). By default, the `ExpressionInterpreter` includes a set of built-in functions including `startsWith`, `endsWith`, `min` and `max`.
+* **Function Calls:** Registered custom functions can be called using their name followed by arguments in parentheses (e.g., `startsWith(name, 'Prefix')`, `isOlderThan(currentUser, 30)`). By default, the `ExpressionInterpreter` includes a set of built-in functions including:
+    - `startsWith` => Equivalent to `string.StartsWith`
+    - `endsWith` => Equivalent to `string.EndsWith`
+    - `min` => Equivalent to `Math.Min` (if numbers are passed as arguments) or returns the shortest `string` if strings are passed as arguments.
+    - `max` => Equivalent to `Math.Max` (if numbers are passed as arguments) or returns the longest `string` if strings are passed as arguments.
+    - `string` => Equivalent to `Object.ToString()`.
+    - `length` => Equivalent to `string.Length`.
 * **Ternary Expressions:** Python-style ternary support (e.g., `'Over 21' if (user.Age > 21) else 'Under 21'`).
 
 ## Contributing
