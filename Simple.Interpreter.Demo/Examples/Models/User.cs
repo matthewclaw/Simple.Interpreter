@@ -19,5 +19,11 @@ namespace Simple.Interpreter.Demo.Examples.Models
         {
             return $"{Name} (Age: {Age}, City: {City})";
         }
+
+        public bool TryMove(string to)
+        {
+            City = to;
+            return true;
+        }
     }
 }

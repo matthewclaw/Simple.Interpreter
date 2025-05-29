@@ -59,6 +59,10 @@ namespace Simple.Interpreter.Ast
 
         public Expression GetExpression(string expression)
         {
+            if (string.IsNullOrEmpty(expression))
+            {
+                throw new ArgumentNullException($"{nameof(expression)} cannot be null or empty");
+            }
             int tokenPosition = 0;
             expression = SanitizeExpression(expression);
             var tokens = Tokenize(expression);
