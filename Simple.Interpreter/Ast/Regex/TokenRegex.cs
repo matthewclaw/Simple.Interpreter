@@ -10,7 +10,7 @@ namespace Simple.Interpreter.Ast
     {
         public const string ARITHMETIC_OPERATORS_PART = @"[\+\-\*\/]";
         public const string COMPARISON_OPERATORS_PART = @"([=!]=)|([><]=?)|(\b(not\s)?in\b)|(\band\b)|(\bor\b)";
-        public const string NATURAL_COMPARISON_PART = @"(is\s)?((greater|less)(\sthan)?)(\sor\sequal\sto)?|(is\s)?(not\s)?equal(s|\sto)|(is\s)";
+        public const string NATURAL_COMPARISON_PART = @"(is\s)?((greater|less)(?!\w)(\sthan)?)(\sor\sequal\sto)?|(is\s)?(not\s)?equal(s|\sto)(?!\w)|(is\s)";
         public const string VALUE_LITERAL_PART = @"""[^""]*""|'[^']*'|\d+\.?\d*";
         public const string VARIABLE_AND_MEMBER_PART = @"\w+(\.\w+)*";
         public const string MISC_PART = @"[\[\]\(\)\,]";
