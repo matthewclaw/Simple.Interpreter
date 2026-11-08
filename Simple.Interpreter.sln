@@ -20,6 +20,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		README.md = README.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "4. Benchmarks", "4. Benchmarks", "{135A51D6-958E-4E82-A16A-B353ADD7B411}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simple.Interpreter.Benchmarks", "Simple.Interpreter.Benchmarks\Simple.Interpreter.Benchmarks.csproj", "{C33FE999-AEB5-4DE6-AF1D-A16A177226E1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -38,6 +42,10 @@ Global
 		{92DABBB7-085C-4FF6-B0F3-E5FCBBD3C906}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{92DABBB7-085C-4FF6-B0F3-E5FCBBD3C906}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{92DABBB7-085C-4FF6-B0F3-E5FCBBD3C906}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C33FE999-AEB5-4DE6-AF1D-A16A177226E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C33FE999-AEB5-4DE6-AF1D-A16A177226E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C33FE999-AEB5-4DE6-AF1D-A16A177226E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C33FE999-AEB5-4DE6-AF1D-A16A177226E1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -46,6 +54,7 @@ Global
 		{E2DCE93F-5C66-401E-B36F-CEFA32368386} = {F2F91D49-F001-4627-8389-9D6AC26D8A13}
 		{6AA38CF0-0D55-46FB-8F8B-B83B0475D14F} = {B43E2624-B84B-4BBC-8652-D5539E0F33E9}
 		{92DABBB7-085C-4FF6-B0F3-E5FCBBD3C906} = {8D30DB46-874F-4437-93D8-215F108651F1}
+		{C33FE999-AEB5-4DE6-AF1D-A16A177226E1} = {135A51D6-958E-4E82-A16A-B353ADD7B411}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {95E4E910-339D-4689-BBD4-9DD2A63EB146}

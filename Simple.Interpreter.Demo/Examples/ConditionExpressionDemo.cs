@@ -14,7 +14,7 @@ namespace Simple.Interpreter.Demo.Examples
     /// </summary>
     public static class ConditionExpressionDemo
     {
-        public const string EXPRESSION = "user.Age > 18 and user.City == 'Johannesburg'";
+        public const string EXPRESSION = "user.Age > 18 and (user.City == 'Johannesburg' or user.TryMove('Johannesburg')";
         public const string DESCRIPTION = $"Condition Expression: {EXPRESSION}";
 
         public static void Run()

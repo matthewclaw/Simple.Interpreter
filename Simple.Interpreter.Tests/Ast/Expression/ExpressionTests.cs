@@ -10,6 +10,7 @@ namespace Simple.Interpreter.Tests.Ast.Expression
         {
             _expressionInterpreter = new ExpressionInterpreter();
         }
+
         [Theory]
         [ClassData(typeof(ExpressionScopedTestCases))]
         public void Expression_EvaluateWithScopeExpression_ReturnsCorrectly(string expression, Dictionary<string, object>? variables, bool errorExpected, object? expectedValue)
@@ -108,5 +109,6 @@ namespace Simple.Interpreter.Tests.Ast.Expression
                 }
             }
         }
+
     }
 }
