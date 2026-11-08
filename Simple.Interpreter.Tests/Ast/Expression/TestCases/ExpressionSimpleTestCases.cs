@@ -39,6 +39,17 @@ namespace Simple.Interpreter.Tests.Ast.Expression.TestCases
             yield return new ExpressionSimpleTest(expression: "6 is not equal to 4", expectedValue: true);
             yield return new ExpressionSimpleTest(expression: "true and false", expectedValue: false);
             yield return new ExpressionSimpleTest(expression: "true or false", expectedValue: true);
+            // Regression: parser correctness (bugfix/parser-correctness)
+            yield return new ExpressionSimpleTest(expression: "10-2-3", expectedValue: 5);
+            yield return new ExpressionSimpleTest(expression: "100/10/2", expectedValue: 5);
+            yield return new ExpressionSimpleTest(expression: "3>=3 and true", expectedValue: true);
+            yield return new ExpressionSimpleTest(expression: "2>=3 and true", expectedValue: false);
+            yield return new ExpressionSimpleTest(expression: "5>=3 or false", expectedValue: true);
+            // Integer division follows C# semantics (truncates) - DECISION PENDING
+            yield return new ExpressionSimpleTest(expression: "7/2", expectedValue: 3);
+            // Guard: `is` followed by a quoted/number literal must still match as the operator
+            yield return new ExpressionSimpleTest(expression: "'foo' is 'foo'", expectedValue: true);
+            yield return new ExpressionSimpleTest(expression: "5 is 5", expectedValue: true);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
