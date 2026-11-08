@@ -252,7 +252,7 @@ namespace Simple.Interpreter.Ast
                     case BinaryOperators.Add: arithmeticResult = leftDouble + rightDouble; break;
                     case BinaryOperators.Minus: arithmeticResult = leftDouble - rightDouble; break;
                     case BinaryOperators.Multiply: arithmeticResult = leftDouble * rightDouble; break;
-                    case BinaryOperators.Divide: arithmeticResult = leftDouble / rightDouble; break;
+                    case BinaryOperators.Divide: arithmeticResult = bothInts ? Convert.ToInt32(left) / Convert.ToInt32(right) : leftDouble / rightDouble; break;
                     case BinaryOperators.EqualTo: return leftDouble == rightDouble;
                     case BinaryOperators.NotEqualTo: return leftDouble != rightDouble;
                     case BinaryOperators.GreaterThan: return leftDouble > rightDouble;
