@@ -222,6 +222,7 @@ namespace Simple.Interpreter.Ast
                 case BinaryOperators.NotEqualTo:
                 case BinaryOperators.GreaterThan:
                 case BinaryOperators.LessThan:
+                case BinaryOperators.GreaterThanOrEqualTo:
                 case BinaryOperators.LessThanOrEqualTo: return 4;
                 case BinaryOperators.Add:
                 case BinaryOperators.Minus: return 5;
