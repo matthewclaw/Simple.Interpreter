@@ -308,7 +308,7 @@ namespace Simple.Interpreter.Ast
                     break;
                 }
                 position++;
-                ExpressionNode right = ParseExpression(tokens, ref position, tokenContext, opPrecedence);
+                ExpressionNode right = ParseExpression(tokens, ref position, tokenContext, opPrecedence + 1);
                 if (right == null)
                 {
                     break;
