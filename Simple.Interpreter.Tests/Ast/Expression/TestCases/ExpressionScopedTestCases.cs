@@ -45,6 +45,11 @@ namespace Simple.Interpreter.Tests.Ast.Expression.TestCases
             yield return new ExpressionScopeTest(expression: "order.MyProperty", variables: new Dictionary<string, object> { { "order", new ExpressionTestObject() } }, errorExpected: false, expectedValue: 42);
             yield return new ExpressionScopeTest(expression: "info.MyMethod2('test')", variables: new Dictionary<string, object> { { "info", new ExpressionTestObject() } }, errorExpected: false, expectedValue: "TEST");
             yield return new ExpressionScopeTest(expression: "isActive or notReady", variables: new Dictionary<string, object> { { "isActive", false }, { "notReady", true } }, errorExpected: false, expectedValue: true);
+            // Regression: identifiers that start with a natural-language operator word must not be split
+            yield return new ExpressionScopeTest(expression: "lessons > 3", variables: new Dictionary<string, object> { { "lessons", 5 } }, errorExpected: false, expectedValue: true);
+            yield return new ExpressionScopeTest(expression: "equalsCount == 1", variables: new Dictionary<string, object> { { "equalsCount", 1 } }, errorExpected: false, expectedValue: true);
+            yield return new ExpressionScopeTest(expression: "greaterValue + 1", variables: new Dictionary<string, object> { { "greaterValue", 10 } }, errorExpected: false, expectedValue: 11);
+            yield return new ExpressionScopeTest(expression: "lessThanOne.MyProperty", variables: new Dictionary<string, object> { { "lessThanOne", new ExpressionTestObject() } }, errorExpected: false, expectedValue: 42);
         }
 
         IEnumerator IEnumerable.GetEnumerator()

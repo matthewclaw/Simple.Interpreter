@@ -47,6 +47,9 @@ namespace Simple.Interpreter.Tests.Ast.Expression.TestCases
             yield return new ExpressionSimpleTest(expression: "5>=3 or false", expectedValue: true);
             // Integer division follows C# semantics (truncates) - DECISION PENDING
             yield return new ExpressionSimpleTest(expression: "7/2", expectedValue: 3);
+            // Guard: `is` followed by a quoted/number literal must still match as the operator
+            yield return new ExpressionSimpleTest(expression: "'foo' is 'foo'", expectedValue: true);
+            yield return new ExpressionSimpleTest(expression: "5 is 5", expectedValue: true);
         }
 
         IEnumerator IEnumerable.GetEnumerator()
